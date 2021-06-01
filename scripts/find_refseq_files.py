@@ -39,4 +39,25 @@ def get_globbed_list(pathtodir, target):
     """
     p = pathtodir.expanduser()
     return list(p.glob(target))
+
+def find_refseq_files(pdbid, dirpath):
+    """Takes a pdbid and directory. 
+       Searches directory for matches to the pdbid.
+       Written to search for refseq files of form:
+       PDBID_[chainID]_refseq.fasta
+
+    :param pdbid: str
+    :param pathtodir: pathlib.PosixPath
+    :returns: list of pathlib.PosixPaths
+    """
+    try:
+        fourletter=iscorrect_pdbid(pdbid)
+    except:
+        raise Exception('PDB ID incorrect!')
+
+    if not fourletter:
+        raise Exception('REDO')
+    else:
+        refmt_pdbid=refseq_formatter(fourletter)
+        return get_globbed_list(dirpath, refmt_pdbid)
     
