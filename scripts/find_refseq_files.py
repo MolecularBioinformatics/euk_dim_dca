@@ -7,6 +7,7 @@ corresponding to given 4-letter PDB ID
 """
 
 from pathlib import Path
+import pytest
 
 def iscorrect_pdbid(pdbid):
     """Checks if pdbid is a 4-char string
@@ -60,4 +61,15 @@ def find_refseq_files(pdbid, dirpath):
     else:
         refmt_pdbid=refseq_formatter(fourletter)
         return get_globbed_list(dirpath, refmt_pdbid)
-    
+
+
+def test_iscorrect_pdbid_notstr():
+    with pytest.raises(TypeError):
+        iscorrect_pdbid(1111)
+
+def test_iscorrect_pdbid_toolong():
+    with pytest.raises(Exception):
+        iscorrect_pdbid('aaaaa')
+
+def test_iscorrect_pdbid_lower():
+    assert iscorrect_pdbid('1AUD') == '1aud'
