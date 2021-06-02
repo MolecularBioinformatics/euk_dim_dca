@@ -73,3 +73,27 @@ def test_iscorrect_pdbid_toolong():
 
 def test_iscorrect_pdbid_lower():
     assert iscorrect_pdbid('1AUD') == '1aud'
+
+def test_refseq_formatter():
+    assert refseq_formatter('1aud') == '1aud*refseq.fasta'
+
+def test_get_globbed_list():
+    dirpath = Path('../testdata')
+    tworefseqs = '1c0f*refseq.fasta'
+    onerefseqs = '1d4x*refseq.fasta'
+    nonrefseqs = '1euc*refseq.fasta'
+    assert len(get_globbed_list(dirpath, tworefseqs)) == 2
+    assert len(get_globbed_list(dirpath, onerefseqs)) == 1
+    assert len(get_globbed_list(dirpath, nonrefseqs)) == 0
+
+def test_find_refseq_files():
+    dirpath = Path('../testdata')
+    two = '1c0f'; one = '1d4x'; non = '1euc'
+    two_out = [Path('../testdata/1c0f_A_refseq.fasta'),
+               Path('../testdata/1c0f_S_refseq.fasta')]
+    one_out = [Path('../testdata/1d4x_A_refseq.fasta')]
+    non_out = []
+    assert find_refseq_files(two, dirpath) == two_out
+    assert find_refseq_files(one, dirpath) == one_out
+    assert find_refseq_files(non, dirpath) == non_out
+     
