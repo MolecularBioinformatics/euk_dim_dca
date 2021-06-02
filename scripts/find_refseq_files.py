@@ -57,10 +57,14 @@ def find_refseq_files(pdbid, dirpath):
         raise Exception('PDB ID incorrect!')
 
     if not fourletter:
-        raise Exception('REDO')
+        raise Exception('Give correct PDBID.')
     else:
-        refmt_pdbid=refseq_formatter(fourletter)
-        return get_globbed_list(dirpath, refmt_pdbid)
+        refmt_pdbid = refseq_formatter(fourletter)
+        fileslist = get_globbed_list(dirpath, refmt_pdbid)
+        if len(fileslist) != 2:
+            raise Exception('Number refseq files not equal to 2!')
+        else:
+            return fileslist
 
 
 def test_iscorrect_pdbid_notstr():
@@ -86,14 +90,17 @@ def test_get_globbed_list():
     assert len(get_globbed_list(dirpath, onerefseqs)) == 1
     assert len(get_globbed_list(dirpath, nonrefseqs)) == 0
 
-def test_find_refseq_files():
+def test_find_refseq_files_twofiles():
     dirpath = Path('../testdata')
-    two = '1c0f'; one = '1d4x'; non = '1euc'
+    two = '1c0f'
     two_out = [Path('../testdata/1c0f_A_refseq.fasta'),
                Path('../testdata/1c0f_S_refseq.fasta')]
-    one_out = [Path('../testdata/1d4x_A_refseq.fasta')]
-    non_out = []
     assert find_refseq_files(two, dirpath) == two_out
-    assert find_refseq_files(one, dirpath) == one_out
-    assert find_refseq_files(non, dirpath) == non_out
      
+def test_find_refseq_files_error():
+    dirpath = Path('../testdata')
+    one = '1d4x'
+    non = '1euc'
+    with pytest.raises(Exception):
+        find_refseq_files(one, dirpath)
+        find_refseq_files(non, dirpath)
