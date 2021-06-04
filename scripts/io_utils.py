@@ -7,8 +7,8 @@ Collection of file writing and checking utility functions.
 Used with the eukaryotic dimer dca method
 """
 
+import warnings
 from pathlib import Path
-
 
 def get_globbed_list(pathtodir, target):
     """Searches directory for files matching
@@ -22,6 +22,7 @@ def get_globbed_list(pathtodir, target):
     p = pathtodir.expanduser()
     return list(p.glob(target))
 
+
 def does_target_exist(pathtotarget):
     """Given directory and a target (file or dir),
     returns True if it exists, False if not.
@@ -34,3 +35,14 @@ def does_target_exist(pathtotarget):
         return True
     else:
         return False
+
+
+def writeout_list(listofitems, outpath):
+    """Writes out contents of a list, newline-separated
+    to a file specified by outpath.
+
+    :param listofitems: list to write out
+    :param outpath: pathlib.PosixPath
+    """
+    with open(outpath, 'w+') as f:
+        f.write('\n'.join(listofitems))
