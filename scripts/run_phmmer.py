@@ -13,6 +13,7 @@ import time
 import subprocess
 from pathlib import Path
 
+from io_utils import does_target_exist
 
 def phmmerlog_formatter(seqpath):
     """
@@ -44,10 +45,19 @@ def run_phmmer(databasepath, seqpath, outpath):
                f'{seqpath}',
                f'{databasepath}']
 
-    start = time.perf_counter()
-    proc = subprocess.run(cmdargs)
-    stop = time.perf_counter()
+    if not does_target_exist(outpath):
 
-    print(f'Phmmer ran in {stop-start:0.4f} seconds')
+        start = time.perf_counter()
+        proc = subprocess.run(cmdargs)
+        stop = time.perf_counter()
 
-    return proc
+        if proc.returncode == 0:
+            print(f'Phmmer ran in {stop-start:0.4f} seconds')
+            print(f'Phmmer log stored in {outpath}')
+        else:
+            raise Exception(f'Phmmer run unsuccessful for {seqpath}')
+
+        return proc
+    else:
+        print(f'Phmmer log already exists in {outpath}') 
+
