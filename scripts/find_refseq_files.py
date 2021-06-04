@@ -2,11 +2,13 @@
 """
 find_refseq_files.py
 
-Globs in a given directory for refseq files
+Searches in a given directory for refseq files
 corresponding to given 4-letter PDB ID
 """
 
 from pathlib import Path
+
+from io_utils import get_globbed_list
 
 def iscorrect_pdbid(pdbid):
     """Checks if pdbid is a 4-char string
@@ -28,17 +30,6 @@ def refseq_formatter(pdbid):
     """
     return f'{pdbid}*refseq.fasta'
 
-
-def get_globbed_list(pathtodir, target):
-    """Searches directory for matches to target
-
-    :param pathtodir: pathlib.PosixPath 
-    :param target: str with expression to match
-
-    :returns: list of matching paths
-    """
-    p = pathtodir.expanduser()
-    return list(p.glob(target))
 
 def find_refseq_files(pdbid, dirpath):
     """Takes a pdbid and directory. 
