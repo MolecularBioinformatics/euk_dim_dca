@@ -47,4 +47,4 @@ def writeout_list(listofitems, outpath):
     with open(outpath, 'w+') as f:
         f.write('\n'.join(listofitems))
 
-    print(f'{outpath} written.')
+    print(f'{outpath.name} written into {outpath.parent}')
