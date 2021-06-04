@@ -45,16 +45,19 @@ def run_phmmer(databasepath, seqpath, outpath):
                f'{seqpath}',
                f'{databasepath}']
 
-    if not does_target_exist(outpath):
-        start = time.perf_counter()
-        proc = subprocess.run(cmdargs)
-        stop = time.perf_counter()
-
-        if proc.returncode == 0:
-            print(f'Phmmer ran in {stop-start:0.4f} seconds')
-            print(f'Phmmer log stored in {outpath}')
-        else:
-            raise Exception(f'Phmmer run unsuccessful for {seqpath}')
+    if not does_target_exist(seqpath):
+        raise FileNotFoundError(f'Could not find {seqpath}!')
     else:
-        print(f'Phmmer log already exists in {outpath}') 
+        if does_target_exist(outpath):
+            print(f'Phmmer log already exists in {outpath}') 
+        else:
+            try:
+                start = time.perf_counter()
+                proc = subprocess.run(cmdargs)
+                stop = time.perf_counter()
+                if proc.returncode == 0:
+                    print(f'Phmmer ran in {stop-start:0.4f} seconds')
+                    print(f'Phmmer log stored in {outpath}')
+            except:
+                raise Exception(f'Phmmer run unsuccessful for {seqpath}')
 
