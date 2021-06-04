@@ -9,6 +9,7 @@ import sys
 sys.path.append("../scripts/")
 
 from find_refseq_files import *
+from io_utils import *
 
 def test_iscorrect_pdbid_notstr():
     with pytest.raises(TypeError):
