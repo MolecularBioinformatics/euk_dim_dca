@@ -9,7 +9,6 @@ Used with the eukaryotic dimer dca method
 
 from pathlib import Path
 
-# search for matching files in dir
 
 def get_globbed_list(pathtodir, target):
     """Searches directory for files matching
@@ -22,3 +21,16 @@ def get_globbed_list(pathtodir, target):
     """
     p = pathtodir.expanduser()
     return list(p.glob(target))
+
+def does_target_exist(pathtotarget):
+    """Given directory and a target (file or dir),
+    returns True if it exists, False if not.
+
+    :param pathtotarget: pathlib.PosixPath
+
+    :returns: bool
+    """
+    if pathtotarget.is_file() or pathtotarget.is_dir():
+        return True
+    else:
+        return False
