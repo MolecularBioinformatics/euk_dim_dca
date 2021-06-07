@@ -59,4 +59,4 @@ def parse_accid_phmmerlog(pathtophmmerlog, outpath, overwrite=False):
         elif overwrite:
             writeout_list(acclist, keyfilepath) 
         else:
-            print(f'{keyfilepath} exists already. Overwrite with overwrite=True.')
+            print(f'Keyfile: {keyfilepath} exists already.\nOverwrite with overwrite=True.')

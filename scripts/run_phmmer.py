@@ -51,7 +51,8 @@ def run_phmmer(databasepath, seqpath, phmmerpath):
         raise FileNotFoundError(f'Could not find {seqpath}!')
     else:
         if does_target_exist(outpath):
-            print(f'Phmmer log ({outpath.stem}) already exists in {outpath.parent}') 
+            print(f'Phmmer logfile: ({outpath.name}) already exists in {outpath.parent}') 
+            return outpath
         else:
             try:
                 start = time.perf_counter()
@@ -60,6 +61,6 @@ def run_phmmer(databasepath, seqpath, phmmerpath):
                 if proc.returncode == 0:
                     print(f'Phmmer ran in {stop-start:0.4f} seconds')
                     print(f'Phmmer log stored in {outpath}')
-                return proc, outpath
+                return outpath
             except:
                 raise Exception(f'Phmmer run unsuccessful for {seqpath}')
