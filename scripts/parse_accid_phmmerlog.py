@@ -11,23 +11,23 @@ from pathlib import Path
 from io_utils import writeout_list
 
 
-def keyfile_formatter(pathtophmmer):
+def keyfile_formatter(pathtophmmerlog):
     """Returns formatted keyfile from phmmerlogfile"""
-    return f'{pathtophmmer.stem}.keyfile'
+    return f'{pathtophmmerlog.stem}.keyfile'
 
 
-def get_accidlist(pathtophmmer):
+def get_accidlist(pathtophmmerlog):
     """Returns list of accession IDs from
     phmmer logfile
 
-    :param pathtophmmer: pathlib.PosixPath
+    :param pathtophmmerlog: pathlib.PosixPath
 
     :returns accidlist: list or None
     """
 
     accidlist=[]
 
-    with open(pathtophmmer, 'r') as ph:
+    with open(pathtophmmerlog, 'r') as ph:
         while True:
             line = ph.readline()
             text = line.strip()
@@ -40,20 +40,20 @@ def get_accidlist(pathtophmmer):
         return accidlist
 
 
-def parse_accid_phmmerlog(pathtophmmer, outpath, overwrite=False):
+def parse_accid_phmmerlog(pathtophmmerlog, outpath, overwrite=False):
     """Parses out accids from phmmerlog
     into a keyfile.
 
-    :param pathtophmmer: pathlib.PosixPath
+    :param pathtophmmerlog: pathlib.PosixPath
     :param outpath: pathlib.PosixPath, file and path to output
     """
-    filename = keyfile_formatter(pathtophmmer)
+    filename = keyfile_formatter(pathtophmmerlog)
     keyfilepath = outpath.joinpath(filename)
 
-    if not pathtophmmer.is_file():
-        raise FileNotFoundError(f'File {pathtophmmer} not found!')
+    if not pathtophmmerlog.is_file():
+        raise FileNotFoundError(f'File {pathtophmmerlog} not found!')
     else:
-        acclist = get_accidlist(pathtophmmer)
+        acclist = get_accidlist(pathtophmmerlog)
         if not keyfilepath.is_file():
             writeout_list(acclist, keyfilepath) 
         elif overwrite:
