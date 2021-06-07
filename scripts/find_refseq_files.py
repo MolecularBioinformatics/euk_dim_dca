@@ -51,7 +51,9 @@ def find_refseq_files(pdbid, dirpath):
     else:
         refmt_pdbid = refseq_formatter(fourletter)
         fileslist = get_globbed_list(dirpath, refmt_pdbid)
-        if len(fileslist) != 2:
+        if len(fileslist) == 0:
+            raise FileNotFoundError('No refseq files found.')
+        elif len(fileslist) != 2:
             raise Exception('Number refseq files not equal to 2!')
         else:
             return fileslist
