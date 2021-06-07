@@ -60,6 +60,6 @@ def run_phmmer(databasepath, seqpath, phmmerpath):
                 if proc.returncode == 0:
                     print(f'Phmmer ran in {stop-start:0.4f} seconds')
                     print(f'Phmmer log stored in {outpath}')
-                return proc
+                return proc, outpath
             except:
                 raise Exception(f'Phmmer run unsuccessful for {seqpath}')
