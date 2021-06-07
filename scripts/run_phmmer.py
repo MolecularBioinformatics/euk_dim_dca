@@ -60,4 +60,3 @@ def run_phmmer(databasepath, seqpath, outpath):
                     print(f'Phmmer log stored in {outpath}')
             except:
                 raise Exception(f'Phmmer run unsuccessful for {seqpath}')
-
