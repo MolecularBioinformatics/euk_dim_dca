@@ -58,7 +58,7 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser(usage="python3 %(prog)s [-h] pdbid pathfile --redo")
     parser.add_argument("pdbid", help="4-letter PDB ID")
     parser.add_argument("pathfile", help="file with fasta, database, phmmer paths")
-    parser.add_argument("-r", "--redo", help="overwrite keyfile")
+    parser.add_argument("-r", "--redo", help="True/False to re-parse out keyfile")
     args = parser.parse_args()
 
     if not args.redo:
