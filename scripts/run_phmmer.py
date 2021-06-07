@@ -25,7 +25,7 @@ def phmmerlog_formatter(seqpath):
     return f'{seqpath.stem}_phmmer.log'
 
 
-def run_phmmer(databasepath, seqpath, outpath):
+def run_phmmer(databasepath, seqpath, phmmerpath):
     """
     Spawns subprocess to run phmmer.
 
@@ -33,9 +33,11 @@ def run_phmmer(databasepath, seqpath, outpath):
     --> should be given as path to fasta with database
     --> does this also require SSI index to be made in same folder?
     :param seqpath: pathlib.PosixPath, input seqfile
-    :param outpath: pathlib.PosixPath, outpath logfile
+    :param phmmerpath: pathlib.PosixPath
     :returns: None
     """
+    filename = phmmerlog_formatter(seqpath)
+    outpath = phmmerpath.joinpath(filename)
     cmdargs = ["phmmer",
                "-o",
                f'{outpath}',
@@ -49,7 +51,7 @@ def run_phmmer(databasepath, seqpath, outpath):
         raise FileNotFoundError(f'Could not find {seqpath}!')
     else:
         if does_target_exist(outpath):
-            print(f'Phmmer log already exists in {outpath}') 
+            print(f'Phmmer log ({outpath.stem}) already exists in {outpath.parent}') 
         else:
             try:
                 start = time.perf_counter()
@@ -58,5 +60,6 @@ def run_phmmer(databasepath, seqpath, outpath):
                 if proc.returncode == 0:
                     print(f'Phmmer ran in {stop-start:0.4f} seconds')
                     print(f'Phmmer log stored in {outpath}')
+                return proc
             except:
                 raise Exception(f'Phmmer run unsuccessful for {seqpath}')
