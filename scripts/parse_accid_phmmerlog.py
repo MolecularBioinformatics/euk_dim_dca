@@ -40,13 +40,14 @@ def get_accidlist(pathtophmmer):
         return accidlist
 
 
-def parse_accid_phmmerlog(pathtophmmer, filename, outpath, overwrite=False):
+def parse_accid_phmmerlog(pathtophmmer, outpath, overwrite=False):
     """Parses out accids from phmmerlog
     into a keyfile.
 
     :param pathtophmmer: pathlib.PosixPath
     :param outpath: pathlib.PosixPath, file and path to output
     """
+    filename = keyfile_formatter(pathtophmmer)
     keyfilepath = outpath.joinpath(filename)
 
     if not pathtophmmer.is_file():
