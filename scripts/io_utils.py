@@ -10,6 +10,17 @@ Used with the eukaryotic dimer dca method
 import warnings
 from pathlib import Path
 
+def refseq_formatter(pdbid):
+    """Returns formatted refseq fasta 
+    str expression as a regex matching string"""
+    return f'{pdbid}*refseq.fasta'
+
+
+def keyfile_formatter(pathtophmmerlog):
+    """Returns formatted keyfile from phmmerlogfile"""
+    return f'{pathtophmmerlog.stem}.keyfile'
+
+
 def get_globbed_list(pathtodir, target):
     """Searches directory for files matching
     a certain target pattern.

@@ -8,12 +8,7 @@ of sequences up until the inclusion threshold.
 
 from pathlib import Path
 
-from io_utils import writeout_list
-
-
-def keyfile_formatter(pathtophmmerlog):
-    """Returns formatted keyfile from phmmerlogfile"""
-    return f'{pathtophmmerlog.stem}.keyfile'
+from io_utils import writeout_list, keyfile_formatter
 
 
 def get_accidlist(pathtophmmerlog):

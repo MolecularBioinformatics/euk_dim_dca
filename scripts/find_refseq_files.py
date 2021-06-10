@@ -8,7 +8,7 @@ corresponding to given 4-letter PDB ID
 
 from pathlib import Path
 
-from io_utils import get_globbed_list
+from io_utils import get_globbed_list, refseq_formatter
 
 def iscorrect_pdbid(pdbid):
     """Checks if pdbid is a 4-char string
@@ -19,16 +19,6 @@ def iscorrect_pdbid(pdbid):
         raise Exception('PDB ID must have 4 characters.')
     else:
         return pdbid.lower()
-
-
-def refseq_formatter(pdbid):
-    """Returns formatted refseq fasta str expression
-
-    :param pdbid: str
-    
-    :returns: str with matching regex
-    """
-    return f'{pdbid}*refseq.fasta'
 
 
 def find_refseq_files(pdbid, dirpath):
