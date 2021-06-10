@@ -48,6 +48,14 @@ def does_target_exist(pathtotarget):
         return False
 
 
+def readin_list(filepathoflist):
+    """Reads in a file with \n spaced items
+    into a list"""
+    with open(filepathoflist, 'r') as r:
+        lines = r.readlines()
+    return [item.strip() for item in lines]
+
+
 def writeout_list(listofitems, outpath):
     """Writes out contents of a list, newline-separated
     to a file specified by outpath.
