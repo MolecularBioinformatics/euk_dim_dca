@@ -25,13 +25,75 @@ tasks = {'findrefseqs': ('find refseq fasta files', findrefseqs),
          'phmmer': ('run phmmer on refseq', run_phmmer),
          'parsephmmer': ('parse phmmer into keyfile', parse_accid_phmmerlog)} 
 
-def read_in_pathfile(pathfile):
-    """Gets fasta, database, and phmmer paths from text file.
-    Returns list of pathlib.PosixPaths"""
-    with open(pathfile, 'r') as p:
-        paths = p.readlines()
-        paths = [Path(path.strip()) for path in paths]
-    return paths
+class InputConfig():
+    """Reads input from pathfile and datafile"""
+
+    def __init__(self):
+        """Initiates the class"""
+        self.fastapath = ''
+        self.dbpath = ''
+        self.phmmerpath = ''
+
+        self._read_paths()
+
+        self.pdbid = ''
+        self.refseq1 = ''
+        self.refseq2 = ''
+        self.keyfile1 = ''
+        self.keyfile2 = ''
+        self.matchedkeyfile1 = ''
+        self.matchedkeyfile2 = ''
+        self.alnfile1 = ''
+        self.alnfile2 = ''
+        self.jointalnfile = ''
+        self.mfdcaoutfile = '' 
+
+
+    def _read_paths(self):
+        """Reads paths from paths.txt"""
+        with open('../testdata/paths.txt', 'r') as p:
+            paths = p.readlines()
+            paths = [Path(path.strip()) for path in paths]
+        self.fastapath = paths[0]
+        self.dbpath = paths[1]
+        self.phmmerpath = paths[2] 
+
+    def _read_inputs(self):
+        """Reads file inputs from config.txt"""
+        with open('../testdata/config.txt', 'r') as c:
+            for line in c.readlines():
+                if line.startswith('pdbid'):
+                    self.pdbid=line.strip().split('=')[1]
+
+                elif line.startswith('refseq1'):
+                    self.refseq1=line.strip().split('=')[1]
+
+                elif line.startswith('refseq2'):
+                    self.refseq2=line.strip().split('=')[1]
+
+                elif line.startswith('keyfile1'):
+                    self.keyfile1=line.strip().split('=')[1]
+
+                elif line.startswith('keyfile2'):
+                    self.keyfile2=line.strip().split('=')[1]
+
+                elif line.startswith('matchedkeyfile1'):
+                    self.matchedkeyfile1=line.strip().split('=')[1]
+
+                elif line.startswith('matchedkeyfile2'):
+                    self.matchedkeyfile2=line.strip().split('=')[1]
+
+                elif line.startswith('alignment1='):
+                    self.alnfile1=line.strip().split('=')[1]
+
+                elif line.startswith('alignment2'):
+                    self.alnfile2=line.strip().split('=')[1]
+
+                elif line.startswith('jointalignment'):
+                    self.jointalnfile1=line.strip().split('=')[1]
+
+                elif line.startswith('mfdcaoutfile'):
+                    self.mfdcaoutfile=line.strip().split('=')[1]
 
 
 def read_in_datafile(datafile):
