@@ -18,7 +18,7 @@ Where the organism is the 5-letter tag at the end of EntryName.
 from pathlib import Path
 
 from io_utils import get_globbed_list, does_target_exist
-from io_utils import readin_list, writeout_list
+from io_utils import readin_list, writeout_list, matched_keyfile_formatter
 
 
 def check_two_keyfiles(pathtophmmer, pdbid):
@@ -155,4 +155,8 @@ def process_phmmerhits(pathtophmmer, pdbid, minhits=100, maxhits=800):
                 headers = select_seqheader_from_org(masterorgset, entry[1])
                 hits[keyfile] = headers
 
-    return hits
+            for keyfile, entry in hits.items():
+                outfile = matched_keyfile_formatter(keyfile)
+                outpath = pathtophmmer.joinpath(outfile)
+                print(outpath)
+                writeout_list(list(entry), outpath)
