@@ -158,5 +158,4 @@ def process_phmmerhits(pathtophmmer, pdbid, minhits=100, maxhits=800):
             for keyfile, entry in hits.items():
                 outfile = matched_keyfile_formatter(keyfile)
                 outpath = pathtophmmer.joinpath(outfile)
-                print(outpath)
                 writeout_list(list(entry), outpath)
