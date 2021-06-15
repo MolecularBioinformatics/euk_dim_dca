@@ -19,11 +19,6 @@ from io_utils import *
 from run_phmmer import *
 from parse_accid_phmmerlog import *
 
-tasknames = ['findrefseqs', 'phmmer', 'parsephmmer']
-
-tasks = {'findrefseqs': ('find refseq fasta files', findrefseqs),
-         'phmmer': ('run phmmer on refseq', run_phmmer),
-         'parsephmmer': ('parse phmmer into keyfile', parse_accid_phmmerlog)} 
 
 class InputConfig():
     """Reads input from pathfile and datafile"""
@@ -47,6 +42,8 @@ class InputConfig():
         self.alnfile2 = ''
         self.jointalnfile = ''
         self.mfdcaoutfile = '' 
+
+        self._read_inputs()
 
 
     def _read_paths(self):
@@ -96,10 +93,6 @@ class InputConfig():
                     self.mfdcaoutfile=line.strip().split('=')[1]
 
 
-def read_in_datafile(datafile):
-    pass
-
-
 def findrefseqs(pdbid, fastapath):
     """Runs find_refseq_files"""
     refseqpaths = []
@@ -109,38 +102,44 @@ def findrefseqs(pdbid, fastapath):
     except Exception as e:
         print(e)
     finally:
-        return refseqpaths
+        return refseqpaths[0], refseqpaths[1]
 
 
-def runphmmer():
-    pass
+tasknames = ['findrefseqs', 'phmmer', 'parsephmmer']
 
+tasks = {'findrefseqs': ('find refseq fasta files', findrefseqs),
+         'phmmer': ('run phmmer on refseq', run_phmmer),
+         'parsephmmer': ('parse phmmer into keyfile', parse_accid_phmmerlog)} 
 
-def parsephmmer():
-    pass
-
-
-def processphmmer():
-    pass
-
-
-def run_workflow(pdbid, pathfile, redo=False):
+def run_workflow(taskname, redo=False):
     """Runs eukdimerdca workflow"""
 
-    paths = read_in_pathfile(pathfile)
-    fastapath = paths[0]
-    databasepath = paths[1]
-    phmmerpath = paths[2]
+    try:
+        IC = InputConfig()
+    except IOError:
+        IC = None
 
-    refseqpaths = find_refseq_files(pdbid, fastapath)
-    print(f'Found these refseq files:\n{refseqpaths}\n')
 
-    if refseqpaths:
-        for seqpath in refseqpaths:
-            print(f'------> Working on {seqpath}')
-            outfilepath = run_phmmer(databasepath, seqpath, phmmerpath) 
-            if outfilepath.is_file():
-                parse_accid_phmmerlog(outfilepath, phmmerpath, overwrite=redo)
+    if taskname not in tasknames:
+        raise ValueError(f'{taskname} not a valid task. Try again.')
+
+    elif taskname == 'findrefseqs':
+        print(f'{taskname}: {tasks[taskname][0]}')
+        IC.refseq1, IC.refseq2 = findrefseqs(IC.pdbid, IC.fastapath)
+
+    elif taskname == 'phmmer': 
+        print(f'{taskname}: {tasks[taskname][0]}')
+        if not (IC.refseq1 and IC.refseq2):
+            IC.refseq1, IC.refseq2 = findrefseqs(IC.pdbid, IC.fastapath)
+        else:
+            
+
+#    if refseqpaths:
+#        for seqpath in refseqpaths:
+#            print(f'------> Working on {seqpath}')
+#            outfilepath = run_phmmer(databasepath, seqpath, phmmerpath) 
+#            if outfilepath.is_file():
+#                parse_accid_phmmerlog(outfilepath, phmmerpath, overwrite=redo)
 
 if __name__=="__main__":
 
