@@ -146,10 +146,10 @@ def process_phmmerhits(pathtophmmer, pdbid, minhits=100, maxhits=800):
             masterorgset = match_orgtags(*orgsets)
 
             if len(masterorgset) >= maxhits:
+                print(f'ATTENTION: Number of seqs for {pdbid} {len(masterorgset)} exceeded limit of {maxhits}!')
+                print(f'           Matched keyfiles are reduced to {maxhits} sequences.')
                 masterlist = list(masterorgset)
                 masterorgset = set(masterlist[0:maxhits])
-                print(f'WARNING: Number of seqs for {pdbid} exceeded limit of {maxhits}!')
-                print(f'         Matched keyfiles are reduced to {maxhits} sequences.')
 
             for keyfile, entry in hits.items():
                 headers = select_seqheader_from_org(masterorgset, entry[1])
