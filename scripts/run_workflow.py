@@ -21,7 +21,7 @@ from parse_accid_phmmerlog import *
 
 tasknames = ['findrefseqs', 'phmmer', 'parsephmmer']
 
-tasks = {'findrefseqs': ('find refseq fasta files', find_refseq_files),
+tasks = {'findrefseqs': ('find refseq fasta files', findrefseqs),
          'phmmer': ('run phmmer on refseq', run_phmmer),
          'parsephmmer': ('parse phmmer into keyfile', parse_accid_phmmerlog)} 
 
@@ -32,6 +32,34 @@ def read_in_pathfile(pathfile):
         paths = p.readlines()
         paths = [Path(path.strip()) for path in paths]
     return paths
+
+
+def read_in_datafile(datafile):
+    pass
+
+
+def findrefseqs(pdbid, fastapath):
+    """Runs find_refseq_files"""
+    refseqpaths = []
+    try:
+        refseqpaths = find_refseq_files(pdbid, fastapath)
+        print(f'Found these refseq files:\n{refseqpaths}\n')
+    except Exception as e:
+        print(e)
+    finally:
+        return refseqpaths
+
+
+def runphmmer():
+    pass
+
+
+def parsephmmer():
+    pass
+
+
+def processphmmer():
+    pass
 
 
 def run_workflow(pdbid, pathfile, redo=False):
