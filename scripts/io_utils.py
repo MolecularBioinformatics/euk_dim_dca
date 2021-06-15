@@ -21,6 +21,11 @@ def keyfile_formatter(pathtophmmerlog):
     return f'{pathtophmmerlog.stem}.keyfile'
 
 
+def matched_keyfile_formatter(pathtophmmerlog):
+    """Returns formatted keyfile from phmmerlogfile"""
+    return f'{pathtophmmerlog.stem}_matched.keyfile'
+
+
 def get_globbed_list(pathtodir, target):
     """Searches directory for files matching
     a certain target pattern.
