@@ -34,6 +34,8 @@ class InputConfig():
         self.pdbid = ''
         self.refseq1 = ''
         self.refseq2 = ''
+        self.logfile1 = ''
+        self.logfile2 = ''
         self.keyfile1 = ''
         self.keyfile2 = ''
         self.matchedkeyfile1 = ''
@@ -104,11 +106,25 @@ def findrefseqs(pdbid, fastapath):
     finally:
         return refseqpaths[0], refseqpaths[1]
 
+def runphmmer(databasepath, seqpath, phmmerpath):
+    """Runs phmmer on seq"""
+    try:
+        outfilepath = run_phmmer(databasepath, seqpath, phmmerpath)
+    except Exception as e:
+        print(e)
 
-tasknames = ['findrefseqs', 'phmmer', 'parsephmmer']
+
+def parsephmmer(outfilepath, phmmerpath, overwrite):
+    """Parses phmmer log to keyfile"""
+    try:
+        parse_accid_phmmerlog(outfilepath, phmmerpath, overwrite)
+    except FileNotFoundError as fnotfound:
+        print(fnotfound)
+
+tasknames = ['all','findrefseqs', 'runphmmer', 'parsephmmer']
 
 tasks = {'findrefseqs': ('find refseq fasta files', findrefseqs),
-         'phmmer': ('run phmmer on refseq', run_phmmer),
+         'runphmmer': ('run phmmer on refseq', runphmmer),
          'parsephmmer': ('parse phmmer into keyfile', parse_accid_phmmerlog)} 
 
 def run_workflow(taskname, redo=False):
@@ -123,34 +139,36 @@ def run_workflow(taskname, redo=False):
     if taskname not in tasknames:
         raise ValueError(f'{taskname} not a valid task. Try again.')
 
+
     elif taskname == 'findrefseqs':
         print(f'{taskname}: {tasks[taskname][0]}')
         IC.refseq1, IC.refseq2 = findrefseqs(IC.pdbid, IC.fastapath)
 
-    elif taskname == 'phmmer': 
+    elif taskname == 'runphmmer': 
         print(f'{taskname}: {tasks[taskname][0]}')
         if not (IC.refseq1 and IC.refseq2):
             IC.refseq1, IC.refseq2 = findrefseqs(IC.pdbid, IC.fastapath)
-        else:
-            
+        IC.logfile1 = runphmmer(IC.dbpath, IC.refseq1, IC.phmmerpath)
+        IC.logfile2 = runphmmer(IC.dbpath, IC.refseq2, IC.phmmerpath)
 
-#    if refseqpaths:
-#        for seqpath in refseqpaths:
-#            print(f'------> Working on {seqpath}')
-#            outfilepath = run_phmmer(databasepath, seqpath, phmmerpath) 
-#            if outfilepath.is_file():
-#                parse_accid_phmmerlog(outfilepath, phmmerpath, overwrite=redo)
+    elif taskname == 'parsephmmer':
+        print(f'{taskname}: {tasks[taskname][0]}')
+        if not (IC.logfile1 and IC.logfile2):
+            raise FileNotFoundError(f'Phmmer logfiles do not exist:\n{IC.logfile1}\n{IC.logfile2}')
+        else:
+            parsephmmer(IC.logfile1, IC.phmmerpath, redo)
+            parsephmmer(IC.logfile2, IC.phmmerpath, redo)
+        
 
 if __name__=="__main__":
 
     import argparse
-    parser = argparse.ArgumentParser(usage="python3 %(prog)s [-h] pdbid pathfile --redo")
-    parser.add_argument("pdbid", help="4-letter PDB ID")
-    parser.add_argument("pathfile", help="file with fasta, database, phmmer paths")
+    parser = argparse.ArgumentParser(usage="python3 %(prog)s [-h] taskname --redo")
+    parser.add_argument("taskname", help="task to run: findrefseqs, runphmmer, parsephmmer")
     parser.add_argument("-r", "--redo", help="True/False to re-parse out keyfile")
     args = parser.parse_args()
 
     if not args.redo:
-        run_workflow(args.pdbid, args.pathfile)
+        run_workflow(args.taskname)
     else:
-        run_workflow(args.pdbid, args.pathfile, args.redo)
+        run_workflow(args.taskname, args.redo)
