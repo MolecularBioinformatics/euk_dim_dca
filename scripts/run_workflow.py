@@ -61,38 +61,12 @@ class InputConfig():
         """Reads file inputs from config.txt"""
         with open('../testdata/config.txt', 'r') as c:
             for line in c.readlines():
-                if line.startswith('pdbid'):
-                    self.pdbid=line.strip().split('=')[1]
+                attr = line.strip().split('=')
+                if attr[0] in self.__dict__.keys():
+                    self.__dict__[attr[0]] = attr[1]
 
-                elif line.startswith('refseq1'):
-                    self.refseq1=line.strip().split('=')[1]
-
-                elif line.startswith('refseq2'):
-                    self.refseq2=line.strip().split('=')[1]
-
-                elif line.startswith('keyfile1'):
-                    self.keyfile1=line.strip().split('=')[1]
-
-                elif line.startswith('keyfile2'):
-                    self.keyfile2=line.strip().split('=')[1]
-
-                elif line.startswith('matchedkeyfile1'):
-                    self.matchedkeyfile1=line.strip().split('=')[1]
-
-                elif line.startswith('matchedkeyfile2'):
-                    self.matchedkeyfile2=line.strip().split('=')[1]
-
-                elif line.startswith('alignment1='):
-                    self.alnfile1=line.strip().split('=')[1]
-
-                elif line.startswith('alignment2'):
-                    self.alnfile2=line.strip().split('=')[1]
-
-                elif line.startswith('jointalignment'):
-                    self.jointalnfile1=line.strip().split('=')[1]
-
-                elif line.startswith('mfdcaoutfile'):
-                    self.mfdcaoutfile=line.strip().split('=')[1]
+    def update_config_var(self):
+        pass
 
 
 def findrefseqs(pdbid, fastapath):
