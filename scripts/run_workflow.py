@@ -66,8 +66,10 @@ class InputConfig():
                     self.__dict__[attr[0]] = attr[1]
 
     def update_config_var(self):
-        pass
-
+        """Updates config file with attributes"""
+        with open('../testdata/config.out', 'w+') as c:
+            for key, item in self.__dict__.items():
+                c.write(f'{key}={item}\n') 
 
 def findrefseqs(pdbid, fastapath):
     """Runs find_refseq_files"""
@@ -84,6 +86,7 @@ def runphmmer(databasepath, seqpath, phmmerpath):
     """Runs phmmer on seq"""
     try:
         outfilepath = run_phmmer(databasepath, seqpath, phmmerpath)
+        return outfilepath
     except Exception as e:
         print(e)
 
@@ -123,7 +126,9 @@ def run_workflow(taskname, redo=False):
         if not (IC.refseq1 and IC.refseq2):
             IC.refseq1, IC.refseq2 = findrefseqs(IC.pdbid, IC.fastapath)
         IC.logfile1 = runphmmer(IC.dbpath, IC.refseq1, IC.phmmerpath)
+        print(IC.logfile1)
         IC.logfile2 = runphmmer(IC.dbpath, IC.refseq2, IC.phmmerpath)
+        print(IC.logfile2)
 
     elif taskname == 'parsephmmer':
         print(f'{taskname}: {tasks[taskname][0]}')
@@ -133,6 +138,7 @@ def run_workflow(taskname, redo=False):
             parsephmmer(IC.logfile1, IC.phmmerpath, redo)
             parsephmmer(IC.logfile2, IC.phmmerpath, redo)
         
+    IC.update_config_var()
 
 if __name__=="__main__":
 
