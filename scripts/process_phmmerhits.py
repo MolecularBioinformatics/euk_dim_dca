@@ -138,6 +138,7 @@ def process_phmmerhits(pathtophmmer, pdbid, minhits=100, maxhits=600):
             except Exception as e:
                 print(e)
         if hits:
+            keylist = []
             for keyfile, hitlist in hits.items():
                 orgset, orgdict = get_orgs_from_hitlist(hitlist) 
                 hits[keyfile] = (orgset, orgdict)
@@ -158,4 +159,7 @@ def process_phmmerhits(pathtophmmer, pdbid, minhits=100, maxhits=600):
             for keyfile, entry in hits.items():
                 outfile = matched_keyfile_formatter(keyfile)
                 outpath = pathtophmmer.joinpath(outfile)
+                keylist.append(outpath)
                 writeout_list(list(entry), outpath)
+
+            return keylist[0], keylist[1]
