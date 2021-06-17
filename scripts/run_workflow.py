@@ -18,6 +18,7 @@ from find_refseq_files import *
 from io_utils import *
 from run_phmmer import *
 from parse_accid_phmmerlog import *
+from process_phmmerhits import *
 
 
 class InputConfig():
@@ -25,9 +26,9 @@ class InputConfig():
 
     def __init__(self):
         """Initiates the class"""
-        self.fastapath = Path()
-        self.dbpath = Path()
-        self.phmmerpath = Path()
+        self.fastapath = ''
+        self.dbpath = ''
+        self.phmmerpath = ''
 
         self._read_paths()
 
@@ -100,16 +101,27 @@ def runphmmer(databasepath, seqpath, phmmerpath):
 def parsephmmer(outfilepath, phmmerpath, overwrite):
     """Parses phmmer log to keyfile"""
     try:
-        parse_accid_phmmerlog(outfilepath, phmmerpath, overwrite)
+        keyfile = parse_accid_phmmerlog(outfilepath, phmmerpath, overwrite)
+        return keyfile
     except FileNotFoundError as fnotfound:
         print(fnotfound)
 
 
-tasknames = ['findrefseqs', 'runphmmer', 'parsephmmer']
+def processphmmer(phmmerpath, pdbid, minhits=100, maxhits=600):
+    """Checks total number of hits in keyfile, matches organisms.
+       Returns processed keyfile"""
+    try:
+        file1, file2 = process_phmmerhits(phmmerpath, pdbid, minhits, maxhits)
+        return file1, file2
+    except:
+        raise Exception('Unable to process keyfiles.')
+
+tasknames = ['findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer']
 
 tasks = {'findrefseqs': ('find refseq fasta files', findrefseqs),
          'runphmmer': ('run phmmer on refseq', runphmmer),
-         'parsephmmer': ('parse phmmer into keyfile', parse_accid_phmmerlog)} 
+         'parsephmmer': ('parse phmmer into keyfile', parsephmmer),
+         'processphmmer': ('process keyfile and match organisms', processphmmer)} 
 
 def run_workflow(taskname, redo=False):
     """Runs eukdimerdca workflow"""
@@ -138,8 +150,15 @@ def run_workflow(taskname, redo=False):
         if not (IC.logfile1.is_file() and IC.logfile2.is_file()):
             raise FileNotFoundError(f'Phmmer logfiles do not exist:\n{IC.logfile1}\n{IC.logfile2}')
         else:
-            parsephmmer(IC.logfile1, IC.phmmerpath, redo)
-            parsephmmer(IC.logfile2, IC.phmmerpath, redo)
+            IC.keyfile1 = parsephmmer(IC.logfile1, IC.phmmerpath, redo)
+            IC.keyfile2 = parsephmmer(IC.logfile2, IC.phmmerpath, redo)
+
+    elif taskname == 'processphmmer':
+        print(f'{taskname}: {tasks[taskname][0]}')
+        if not (IC.keyfile1.is_file() and IC.keyfile2.is_file()):
+            raise FileNotFoundError(f'Phmmer unprocessed keyfiles do not exist:\n{IC.keyfile1}\n{IC.keyfile2}')
+        else:
+            IC.matchedkeyfile1, IC.matchedkeyfile2 = processphmmer(IC.phmmerpath, IC.pdbid)
         
     IC.update_config_var()
 
