@@ -112,7 +112,7 @@ def match_orgtags(orgset, *orgsets):
         return orgset.intersection(*orgsets)
 
 
-def process_phmmerhits(pathtophmmer, pdbid, minhits=100, maxhits=800):
+def process_phmmerhits(pathtophmmer, pdbid, minhits=100, maxhits=600):
     """Performs post-processing of phmmer hits.
     Checks for suitable number of hits returned.
     Matches organisms for the hits and returns
