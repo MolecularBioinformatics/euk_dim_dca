@@ -34,7 +34,7 @@ def run_phmmer(databasepath, seqpath, phmmerpath):
     --> does this also require SSI index to be made in same folder?
     :param seqpath: pathlib.PosixPath, input seqfile
     :param phmmerpath: pathlib.PosixPath
-    :returns: None
+    :returns: outpath or None
     """
     filename = phmmerlog_formatter(seqpath)
     outpath = phmmerpath.joinpath(filename)
