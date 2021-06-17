@@ -25,9 +25,9 @@ class InputConfig():
 
     def __init__(self):
         """Initiates the class"""
-        self.fastapath = ''
-        self.dbpath = ''
-        self.phmmerpath = ''
+        self.fastapath = Path()
+        self.dbpath = Path()
+        self.phmmerpath = Path()
 
         self._read_paths()
 
@@ -63,13 +63,18 @@ class InputConfig():
             for line in c.readlines():
                 attr = line.strip().split('=')
                 if attr[0] in self.__dict__.keys():
-                    self.__dict__[attr[0]] = attr[1]
+                    if attr[0] == 'pdbid':
+                        self.__dict__[attr[0]] = attr[1]
+                    else:
+                        self.__dict__[attr[0]] = Path(attr[1])
 
     def update_config_var(self):
         """Updates config file with attributes"""
-        with open('../testdata/config.out', 'w+') as c:
+        with open('../testdata/config.txt', 'w+') as c:
             for key, item in self.__dict__.items():
-                c.write(f'{key}={item}\n') 
+                if not key.endswith('path'):
+                    c.write(f'{key}={item}\n') 
+
 
 def findrefseqs(pdbid, fastapath):
     """Runs find_refseq_files"""
@@ -81,6 +86,7 @@ def findrefseqs(pdbid, fastapath):
         print(e)
     finally:
         return refseqpaths[0], refseqpaths[1]
+
 
 def runphmmer(databasepath, seqpath, phmmerpath):
     """Runs phmmer on seq"""
@@ -98,7 +104,8 @@ def parsephmmer(outfilepath, phmmerpath, overwrite):
     except FileNotFoundError as fnotfound:
         print(fnotfound)
 
-tasknames = ['all','findrefseqs', 'runphmmer', 'parsephmmer']
+
+tasknames = ['findrefseqs', 'runphmmer', 'parsephmmer']
 
 tasks = {'findrefseqs': ('find refseq fasta files', findrefseqs),
          'runphmmer': ('run phmmer on refseq', runphmmer),
@@ -112,10 +119,8 @@ def run_workflow(taskname, redo=False):
     except IOError:
         IC = None
 
-
     if taskname not in tasknames:
         raise ValueError(f'{taskname} not a valid task. Try again.')
-
 
     elif taskname == 'findrefseqs':
         print(f'{taskname}: {tasks[taskname][0]}')
@@ -126,13 +131,11 @@ def run_workflow(taskname, redo=False):
         if not (IC.refseq1 and IC.refseq2):
             IC.refseq1, IC.refseq2 = findrefseqs(IC.pdbid, IC.fastapath)
         IC.logfile1 = runphmmer(IC.dbpath, IC.refseq1, IC.phmmerpath)
-        print(IC.logfile1)
         IC.logfile2 = runphmmer(IC.dbpath, IC.refseq2, IC.phmmerpath)
-        print(IC.logfile2)
 
     elif taskname == 'parsephmmer':
         print(f'{taskname}: {tasks[taskname][0]}')
-        if not (IC.logfile1 and IC.logfile2):
+        if not (IC.logfile1.is_file() and IC.logfile2.is_file()):
             raise FileNotFoundError(f'Phmmer logfiles do not exist:\n{IC.logfile1}\n{IC.logfile2}')
         else:
             parsephmmer(IC.logfile1, IC.phmmerpath, redo)
