@@ -39,7 +39,7 @@ def get_globbed_list(pathtodir, target):
     return list(p.glob(target))
 
 
-def does_target_exist(pathtotarget):
+def does_target_exist(pathtotarget, targettype):
     """Given directory and a target (file or dir),
     returns True if it exists, False if not.
 
@@ -47,10 +47,12 @@ def does_target_exist(pathtotarget):
 
     :returns: bool
     """
-    if pathtotarget.is_file() or pathtotarget.is_dir():
-        return True
+    if targettype == 'file':
+        return pathtotarget.is_file()
+    elif targettype == 'dir':
+        return pathtotarget.is_dir()
     else:
-        return False
+        return pathtotarget.exists()
 
 
 def readin_list(filepathoflist):
