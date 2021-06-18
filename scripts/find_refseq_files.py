@@ -37,7 +37,7 @@ def find_refseq_files(pdbid, dirpath):
         raise Exception('PDB ID incorrect!')
 
     if not fourletter:
-        raise Exception('No PDBID or incorrect PDBID. Give correct PDBID.')
+        raise Exception('No PDBID. Give correct PDBID.')
     else:
         refmt_pdbid = refseq_formatter(fourletter)
         fileslist = get_globbed_list(dirpath, refmt_pdbid)
