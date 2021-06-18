@@ -48,7 +48,7 @@ def run_phmmer(databasepath, seqpath, phmmerpath):
                f'{databasepath}']
 
     if not does_target_exist(seqpath, 'file'):
-        raise FileNotFoundError(f'Could not find {seqpath}!')
+        raise FileNotFoundError(f'REFSEQ FILE MISSING: Could not find {seqpath}!')
     else:
         if does_target_exist(outpath, 'file'):
             print(f'Phmmer logfile: ({outpath.name}) already exists in {outpath.parent}') 
