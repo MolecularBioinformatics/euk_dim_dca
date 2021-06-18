@@ -46,7 +46,7 @@ def parse_accid_phmmerlog(pathtophmmerlog, outpath, overwrite=False):
     keyfilepath = outpath.joinpath(filename)
 
     if not pathtophmmerlog.is_file():
-        raise FileNotFoundError(f'File {pathtophmmerlog} not found!')
+        raise FileNotFoundError(f'PHMMERLOG MISSING: File {pathtophmmerlog} not found!')
     else:
         acclist = get_accidlist(pathtophmmerlog)
         if not keyfilepath.is_file():
