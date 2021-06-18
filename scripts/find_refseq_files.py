@@ -37,14 +37,14 @@ def find_refseq_files(pdbid, dirpath):
         raise Exception('PDB ID incorrect!')
 
     if not fourletter:
-        raise Exception('Give correct PDBID.')
+        raise Exception('No PDBID or incorrect PDBID. Give correct PDBID.')
     else:
         refmt_pdbid = refseq_formatter(fourletter)
         fileslist = get_globbed_list(dirpath, refmt_pdbid)
         if len(fileslist) == 0:
             raise FileNotFoundError(f'No refseq files found for {pdbid}.')
         elif len(fileslist) != 2:
-            raise Exception('Number refseq files not equal to 2!')
+            raise Exception('Number refseq files: {len(fileslist)} not equal to 2!')
         else:
             return fileslist
 
