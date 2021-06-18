@@ -17,7 +17,7 @@ Where the organism is the 5-letter tag at the end of EntryName.
 
 from pathlib import Path
 
-from io_utils import get_globbed_list, does_target_exist
+from io_utils import get_globbed_list
 from io_utils import readin_list, writeout_list, matched_keyfile_formatter
 
 
