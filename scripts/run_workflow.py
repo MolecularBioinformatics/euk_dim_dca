@@ -20,13 +20,14 @@ from process_phmmerhits import *
 class InputConfig():
     """Reads input from pathfile and datafile"""
 
-    def __init__(self):
+    def __init__(self, config, paths):
         """Initiates the class"""
+
         self.fastapath = ''
         self.dbpath = ''
         self.phmmerpath = ''
 
-        self._read_paths()
+        self._read_paths(paths)
 
         self.pdbid = ''
         self.refseq1 = ''
@@ -42,21 +43,21 @@ class InputConfig():
         self.jointalnfile = ''
         self.mfdcaoutfile = '' 
 
-        self._read_inputs()
+        self._read_inputs(config)
 
 
-    def _read_paths(self):
+    def _read_paths(self, paths):
         """Reads paths from paths.txt"""
-        with open('../testdata/paths.txt', 'r') as p:
+        with open(paths, 'r') as p:
             paths = p.readlines()
             paths = [Path(path.strip()) for path in paths]
         self.fastapath = paths[0]
         self.dbpath = paths[1]
         self.phmmerpath = paths[2] 
 
-    def _read_inputs(self):
+    def _read_inputs(self, config):
         """Reads file inputs from config.txt"""
-        with open('../testdata/config.txt', 'r') as c:
+        with open(config, 'r') as c:
             for line in c.readlines():
                 attr = line.strip().split('=')
                 if attr[0] in self.__dict__.keys():
@@ -65,9 +66,9 @@ class InputConfig():
                     else:
                         self.__dict__[attr[0]] = Path(attr[1])
 
-    def update_config_var(self):
+    def update_config_var(self, config):
         """Updates config file with attributes"""
-        with open('../testdata/config.txt', 'w+') as c:
+        with open(config, 'w+') as c:
             for key, item in self.__dict__.items():
                 if not key.endswith('path'):
                     c.write(f'{key}={item}\n') 
@@ -139,11 +140,11 @@ tasks = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
          'parsephmmer': ('3. parse phmmer into keyfile\n', parsephmmer),
          'processphmmer': ('4. process keyfile and match organisms\n', processphmmer)} 
 
-def run_workflow(tasknamelist, redo=False):
+def run_workflow(configf, pathsf, tasknamelist, redo=False):
     """Runs eukdimerdca workflow"""
 
     try:
-        IC = InputConfig()
+        IC = InputConfig(configf, pathsf)
     except IOError:
         IC = None
 
@@ -155,27 +156,32 @@ def run_workflow(tasknamelist, redo=False):
             torun = tasks[taskname][1] 
             IC = torun(IC)
             print('\n')
-        IC.update_config_var()
+        IC.update_config_var(configf)
 
 if __name__=="__main__":
 
     import argparse
     parser = argparse.ArgumentParser(usage="python3 %(prog)s [-h] taskname [taskname, ...] --redo")
+    parser.add_argument("configfile", help="path to config.txt file")
+    parser.add_argument("pathfile", help="path to paths.txt file")
     parser.add_argument("taskname", nargs = '+', help="task to run: findrefseqs, runphmmer, parsephmmer")
     parser.add_argument("-r", "--redo", help="True/False to re-parse out keyfile")
     args = parser.parse_args()
 
+    configfile = args.configfile
+    pathfile = args.pathfile
+
     if isinstance(args.taskname, str):
         singletask = [args.taskname]
         if not args.redo:
-            run_workflow(singletask)
+            run_workflow(configfile, pathfile, singletask)
         else:
-            run_workflow(singletask, args.redo)
+            run_workflow(configfile, pathfile, singletask, args.redo)
     elif isinstance(args.taskname, list):
         tasklist = args.taskname
         if not args.redo:
-            run_workflow(tasklist)
+            run_workflow(configfile, pathfile, tasklist)
         else:
-            run_workflow(tasklist, args.redo)
+            run_workflow(configfile, pathfile, tasklist, args.redo)
     else:
-        raise ValueError('Invalid taskname input.')
+        raise ValueError('Invalid input.')
