@@ -152,7 +152,7 @@ def run_workflow(configf, pathsf, tasknamelist, redo=False):
     except IOError:
         IC = None
 
-    for taskname in tasknamelist:  # agreement between taskname as str vs list
+    for taskname in tasknamelist: 
         if taskname not in tasknames:
             raise ValueError(f'{taskname} not a valid task. Try again.')
         else:
