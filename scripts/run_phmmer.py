@@ -25,7 +25,7 @@ def phmmerlog_formatter(seqpath):
     return f'{seqpath.stem}_phmmer.log'
 
 
-def run_phmmer(databasepath, seqpath, phmmerpath):
+def run_phmmer(databasepath, seqpath, phmmerpath, redo=False):
     """
     Spawns subprocess to run phmmer.
 
@@ -50,7 +50,7 @@ def run_phmmer(databasepath, seqpath, phmmerpath):
     if not does_target_exist(seqpath, 'file'):
         raise FileNotFoundError(f'REFSEQ FILE MISSING: Could not find {seqpath}!')
     else:
-        if does_target_exist(outpath, 'file'):
+        if does_target_exist(outpath, 'file') and not redo:
             print(f'Phmmer logfile: ({outpath.name}) already exists in {outpath.parent}') 
             return outpath
         else:

@@ -74,7 +74,7 @@ class InputConfig():
                     c.write(f'{key}={item}\n') 
 
 
-def findrefseqs(ICObject): 
+def findrefseqs(ICObject, redo=False): 
     """Finds two refseqs for pdbid.
 
     :param ICObject: InputConfig object
@@ -91,15 +91,15 @@ def findrefseqs(ICObject):
         return ICObject
 
 
-def runphmmer(ICObj):  # test on actually running phmmer
+def runphmmer(ICObj, rerun=False):  # test on actually running phmmer
     """Runs phmmer on seq.
     Takes and returns an InputConfigObj."""
     try:
-        ICObj.logfile1 = run_phmmer(ICObj.dbpath, ICObj.refseq1, ICObj.phmmerpath)
+        ICObj.logfile1 = run_phmmer(ICObj.dbpath, ICObj.refseq1, ICObj.phmmerpath, rerun)
     except Exception as e:
         print(e)
     try:
-        ICObj.logfile2 = run_phmmer(ICObj.dbpath, ICObj.refseq2, ICObj.phmmerpath)
+        ICObj.logfile2 = run_phmmer(ICObj.dbpath, ICObj.refseq2, ICObj.phmmerpath, rerun)
     except Exception as e:
         print(e)
     finally:
@@ -122,11 +122,15 @@ def parsephmmer(ICObj, overwrite=False):
         return ICObj
 
 
-def processphmmer(ICObj, minhits=100, maxhits=600):
+def processphmmer(ICObj, overwrite=False):
     """Checks total number of hits in keyfile, matches organisms.
        Returns processed keyfile"""
+
+    minhits = 100
+    maxhits = 600
+
     try:
-        ICObj.matchedkeyfile1, ICObj.matchedkeyfile2 = process_phmmerhits(ICObj.phmmerpath, ICObj.pdbid, minhits, maxhits)
+        ICObj.matchedkeyfile1, ICObj.matchedkeyfile2 = process_phmmerhits(ICObj.phmmerpath, ICObj.pdbid, minhits, maxhits, overwrite)
     except:
         raise Exception('Unable to process keyfiles.')
     finally:
@@ -154,7 +158,7 @@ def run_workflow(configf, pathsf, tasknamelist, redo=False):
         else:
             print(f'--- {taskname} --- {tasks[taskname][0]}')
             torun = tasks[taskname][1] 
-            IC = torun(IC)
+            IC = torun(IC, redo)
             print('\n')
         IC.update_config_var(configf)
 
