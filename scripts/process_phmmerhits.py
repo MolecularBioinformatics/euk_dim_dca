@@ -112,7 +112,7 @@ def match_orgtags(orgset, *orgsets):
         return orgset.intersection(*orgsets)
 
 
-def process_phmmerhits(pathtophmmer, pdbid, minhits=100, maxhits=600):
+def process_phmmerhits(pathtophmmer, pdbid, minhits, maxhits, redo=False):
     """Performs post-processing of phmmer hits.
     Checks for suitable number of hits returned.
     Matches organisms for the hits and returns
@@ -123,6 +123,9 @@ def process_phmmerhits(pathtophmmer, pdbid, minhits=100, maxhits=600):
     :param minhits: int, minimum number of hits
     :param maxhits: int, maximum number of hits
     """
+    print(f'MINHITS: {minhits}')
+    print(f'MAXHITS: {maxhits}')
+    print(f'OVERWRITE: {redo}\n')
 
     try:
         keyfilepaths = check_two_keyfiles(pathtophmmer, pdbid)
@@ -137,6 +140,7 @@ def process_phmmerhits(pathtophmmer, pdbid, minhits=100, maxhits=600):
                 hits[keyfile] = hitlist
             except Exception as e:
                 print(e)
+                break
         if hits:
             keylist = []
             for keyfile, hitlist in hits.items():
