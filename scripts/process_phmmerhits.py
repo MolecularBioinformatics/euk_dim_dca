@@ -141,7 +141,7 @@ def process_phmmerhits(pathtophmmer, pdbid, minhits, maxhits, redo=False):
             except Exception as e:
                 print(e)
                 break
-        if hits:
+        if len(hits) == 2:
             keylist = []
             for keyfile, hitlist in hits.items():
                 orgset, orgdict = get_orgs_from_hitlist(hitlist) 
