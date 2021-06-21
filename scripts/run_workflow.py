@@ -81,7 +81,7 @@ def findrefseqs(ICObject):
     """
     try:
         refseqpaths = find_refseq_files(ICObject.pdbid, ICObject.fastapath)
-        print(f'Found these refseq files:\n{refseqpaths}\n')
+        print(f'Found these refseq files:\n{refseqpaths}')
         ICObject.refseq1=refseqpaths[0]
         ICObject.refseq2=refseqpaths[1]
     except Exception as e:
@@ -134,10 +134,10 @@ def processphmmer(ICObj, minhits=100, maxhits=600):
 
 tasknames = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer']
 
-tasks = {'findrefseqs': ('find refseq fasta files', findrefseqs),
-         'runphmmer': ('run phmmer on refseq', runphmmer),
-         'parsephmmer': ('parse phmmer into keyfile', parsephmmer),
-         'processphmmer': ('process keyfile and match organisms', processphmmer)} 
+tasks = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
+         'runphmmer': ('2. run phmmer on refseq\n', runphmmer),
+         'parsephmmer': ('3. parse phmmer into keyfile\n', parsephmmer),
+         'processphmmer': ('4. process keyfile and match organisms\n', processphmmer)} 
 
 def run_workflow(tasknamelist, redo=False):
     """Runs eukdimerdca workflow"""
@@ -151,8 +151,10 @@ def run_workflow(tasknamelist, redo=False):
         if taskname not in tasknames:
             raise ValueError(f'{taskname} not a valid task. Try again.')
         else:
+            print(f'--- {taskname} --- {tasks[taskname][0]}')
             torun = tasks[taskname][1] 
             IC = torun(IC)
+            print('\n')
         IC.update_config_var()
 
 if __name__=="__main__":
