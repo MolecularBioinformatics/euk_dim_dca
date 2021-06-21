@@ -4,10 +4,8 @@ run_workflow.py Runs eukdimerdca workflow.
 
 INPUT:
 
-1. pdbid
-2. fastapath
-3. databasepath
-4. phmmerpath
+taskname = list of tasknames to run
+redo = boolean of whether or not to rerun tasks
 """
 
 from pathlib import Path
@@ -160,12 +158,22 @@ def run_workflow(tasknamelist, redo=False):
 if __name__=="__main__":
 
     import argparse
-    parser = argparse.ArgumentParser(usage="python3 %(prog)s [-h] taskname --redo")
-    parser.add_argument("taskname", help="task to run: findrefseqs, runphmmer, parsephmmer")
+    parser = argparse.ArgumentParser(usage="python3 %(prog)s [-h] taskname [taskname, ...] --redo")
+    parser.add_argument("taskname", nargs = '+', help="task to run: findrefseqs, runphmmer, parsephmmer")
     parser.add_argument("-r", "--redo", help="True/False to re-parse out keyfile")
     args = parser.parse_args()
 
-    if not args.redo:
-        run_workflow(args.taskname)
+    if isinstance(args.taskname, str):
+        singletask = [args.taskname]
+        if not args.redo:
+            run_workflow(singletask)
+        else:
+            run_workflow(singletask, args.redo)
+    elif isinstance(args.taskname, list):
+        tasklist = args.taskname
+        if not args.redo:
+            run_workflow(tasklist)
+        else:
+            run_workflow(tasklist, args.redo)
     else:
-        run_workflow(args.taskname, args.redo)
+        raise ValueError('Invalid taskname input.')
