@@ -144,7 +144,7 @@ tasks = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
          'parsephmmer': ('3. parse phmmer into keyfile\n', parsephmmer),
          'processphmmer': ('4. process keyfile and match organisms\n', processphmmer)} 
 
-def run_workflow(configf, pathsf, tasknamelist, redo=False):
+def run_workflow(configf, pathsf, tasknamelist, redo):
     """Runs eukdimerdca workflow"""
 
     try:
@@ -174,18 +174,20 @@ if __name__=="__main__":
 
     configfile = args.configfile
     pathfile = args.pathfile
+    redoflag = args.redo
+
+    if redoflag is None:
+        redoflag = False
+    elif redoflag == 'False':
+        redoflag = False
+    elif redoflag == 'True':
+        redoflag = True
 
     if isinstance(args.taskname, str):
         singletask = [args.taskname]
-        if not args.redo:
-            run_workflow(configfile, pathfile, singletask)
-        else:
-            run_workflow(configfile, pathfile, singletask, args.redo)
+        run_workflow(configfile, pathfile, singletask, redoflag)
     elif isinstance(args.taskname, list):
         tasklist = args.taskname
-        if not args.redo:
-            run_workflow(configfile, pathfile, tasklist)
-        else:
-            run_workflow(configfile, pathfile, tasklist, args.redo)
+        run_workflow(configfile, pathfile, tasklist, redoflag)
     else:
         raise ValueError('Invalid input.')
