@@ -35,7 +35,7 @@ def get_accidlist(pathtophmmerlog):
         return accidlist
 
 
-def parse_accid_phmmerlog(pathtophmmerlog, outpath, overwrite=False):
+def parse_accid_phmmerlog(pathtophmmerlog, outpath, overwrite):
     """Parses out accids from phmmerlog
     into a keyfile.
 
@@ -47,6 +47,8 @@ def parse_accid_phmmerlog(pathtophmmerlog, outpath, overwrite=False):
 
     if not pathtophmmerlog.is_file():
         raise FileNotFoundError(f'PHMMERLOG MISSING: File {pathtophmmerlog} not found!')
+    elif pathtophmmerlog.stat().st_size == 0:
+        raise ValueError(f'PHMMERLOG EMPTY: File {pathtophmmerlog} contains nothing!')
     else:
         acclist = get_accidlist(pathtophmmerlog)
         if not keyfilepath.is_file():

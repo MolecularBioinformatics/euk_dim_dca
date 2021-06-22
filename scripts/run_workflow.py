@@ -74,7 +74,7 @@ class InputConfig():
                     c.write(f'{key}={item}\n') 
 
 
-def findrefseqs(ICObject, redo=False): 
+def findrefseqs(ICObject, redo): 
     """Finds two refseqs for pdbid.
 
     :param ICObject: InputConfig object
@@ -91,7 +91,7 @@ def findrefseqs(ICObject, redo=False):
         return ICObject
 
 
-def runphmmer(ICObj, rerun=False):  # test on actually running phmmer
+def runphmmer(ICObj, rerun):  # test on actually running phmmer
     """Runs phmmer on seq.
     Takes and returns an InputConfigObj."""
     try:
@@ -106,23 +106,23 @@ def runphmmer(ICObj, rerun=False):  # test on actually running phmmer
         return ICObj
 
 
-def parsephmmer(ICObj, overwrite=False):
+def parsephmmer(ICObj, overwrite):
     """Parses phmmer log to keyfile.
     Takes and returns and InputConfigObj.
     Overwrite is a bool."""
     try:
         ICObj.keyfile1 = parse_accid_phmmerlog(ICObj.logfile1, ICObj.phmmerpath, overwrite)
-    except FileNotFoundError as fnotfound:
+    except Exception as fnotfound:
         print(fnotfound)
     try:
         ICObj.keyfile2 = parse_accid_phmmerlog(ICObj.logfile2, ICObj.phmmerpath, overwrite)
-    except FileNotFoundError as fnotfound:
+    except Exception as fnotfound:
         print(fnotfound)
     finally:
         return ICObj
 
 
-def processphmmer(ICObj, overwrite=False):
+def processphmmer(ICObj, overwrite):
     """Checks total number of hits in keyfile, matches organisms.
        Returns processed keyfile"""
 
