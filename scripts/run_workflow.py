@@ -15,6 +15,7 @@ from io_utils import *
 from run_phmmer import *
 from parse_accid_phmmerlog import *
 from process_phmmerhits import *
+from run_easel_getseqs import *
 
 
 class InputConfig():
@@ -26,6 +27,7 @@ class InputConfig():
         self.fastapath = ''
         self.dbpath = ''
         self.phmmerpath = ''
+        self.easelpath = ''
 
         self._read_paths(paths)
 
@@ -38,6 +40,8 @@ class InputConfig():
         self.keyfile2 = ''
         self.matchedkeyfile1 = ''
         self.matchedkeyfile2 = ''
+        self.eslfastafile1 = ''
+        self.eslfastafile2 = ''
         self.alnfile1 = ''
         self.alnfile2 = ''
         self.jointalnfile = ''
@@ -54,6 +58,7 @@ class InputConfig():
         self.fastapath = paths[0]
         self.dbpath = paths[1]
         self.phmmerpath = paths[2] 
+        self.easelpath = paths[3]
 
     def _read_inputs(self, config):
         """Reads file inputs from config.txt"""
@@ -137,12 +142,27 @@ def processphmmer(ICObj, overwrite):
         return ICObj
 
 
-tasknames = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer']
+def runeasel(ICObj, rerun):
+    """Runs easel on a keyfile.
+    Extracts sequences from a db."""
+    try:
+        ICObj.eslfastafile1 = run_easel(ICObj.easelpath, ICObj.dbpath, ICObj.phmmerpath, ICObj.matchedkeyfile1, rerun)
+    except Exception as e:
+        print(e)
+    try:
+        ICObj.eslfastafile2 = run_easel(ICObj.easelpath, ICObj.dbpath, ICObj.phmmerpath, ICObj.matchedkeyfile2, rerun)
+    except Exception as e:
+        print(e)
+    return ICObj
+
+
+tasknames = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel']
 
 tasks = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
          'runphmmer': ('2. run phmmer on refseq\n', runphmmer),
          'parsephmmer': ('3. parse phmmer into keyfile\n', parsephmmer),
-         'processphmmer': ('4. process keyfile and match organisms\n', processphmmer)} 
+         'processphmmer': ('4. process keyfile and match organisms\n', processphmmer),
+         'runeasel': ('5. runs easel extract to get seqs from db\n', runeasel)} 
 
 def run_workflow(configf, pathsf, tasknamelist, redo):
     """Runs eukdimerdca workflow"""
