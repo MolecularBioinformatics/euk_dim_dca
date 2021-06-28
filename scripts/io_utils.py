@@ -74,3 +74,49 @@ def writeout_list(listofitems, outpath):
         f.write('\n'.join(listofitems))
 
     print(f'File: {outpath.name} written into dir: {outpath.parent}')
+
+
+def parse_fasta(lines):
+    """Parses a fasta file
+    
+    :param lines: list of lines
+    :returns res: dict of key + seq
+    """
+    res = {}  
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        if line.startswith('>'):
+            label = line[1:]
+            res[label] = []
+        else:
+            res[label].append(line)
+    for k, v in res.items():
+        res[k] = ''.join(v)
+    return res
+
+
+def fa_todict(fastafile):  
+    """Opens fasta file and returns seqdict"""
+    with open(fastafile, 'r') as f:
+        lines = f.readlines()
+        seqsdict = parse_fasta(lines)
+    return seqsdict
+
+def writeout_fasta(somepath, somedict, overwrite=False, addict={}):
+    """Writes dict of seqs to a fastafile"""
+    if not overwrite:
+        with open(somepath, 'a+') as f:
+            for k, v in somedict.items():
+                f.write(''.join(['>', k, '\n']))
+                f.write(''.join([v, '\n']))
+    elif overwrite and addict:
+        with open(somepath, 'w') as f:
+            for k, v in somedict.items():
+                f.write(''.join(['>', k, '\n']))
+                f.write(''.join([v, '\n']))
+            for k, v in addict.items():
+                f.write(''.join(['>', k, '\n']))
+                f.write(''.join([v, '\n']))
+    return
