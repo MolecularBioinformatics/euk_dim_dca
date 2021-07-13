@@ -17,11 +17,10 @@ Where the organism is the 5-letter tag at the end of EntryName.
 
 from pathlib import Path
 
-from io_utils import get_globbed_list
-from io_utils import readin_list, writeout_list, matched_keyfile_formatter
+from io_utils import readin_list, writeout_list, matched_keyfile_formatter,get_globbed_list
 
 
-def check_two_keyfiles(pathtophmmer, pdbid):
+def get_two_keyfiles(pathtophmmer, pdbid):
     """Checks dir for exactly 2 phmmer keyfiles for pdbid
 
     :param pathtophmmer: pathlib.PosixPath
@@ -34,14 +33,14 @@ def check_two_keyfiles(pathtophmmer, pdbid):
     keyfiles = get_globbed_list(pathtophmmer, keyfilefmt)
 
     if len(keyfiles) != 2:
-        raise Exception(f'Number of keyfiles {len(keyfiles)} not equal to 2:\n{keyfiles}')
-    else:
-        return keyfiles
+        raise ValueError(f'Number of keyfiles {len(keyfiles)} not equal to 2:\n{keyfiles}') 
+    return keyfiles
 
 
-def check_hit_nr(pathtokeyfile, hitthresh, relation):
+def get_hit_list(pathtokeyfile, hitthresh, relation):
     """Checks that num of hits in keyfile is higher
-    than minhitnum and lower than maxhitnum
+    than minhitnum and lower than maxhitnum,
+    returns list of hits.
 
     :returns hits: list
     """
@@ -49,17 +48,13 @@ def check_hit_nr(pathtokeyfile, hitthresh, relation):
     hits = readin_list(pathtokeyfile)
     hitnum = len(hits)
     
-    if relation == 'MINIMUM':
-        if hitnum <= hitthresh:
-            raise Exception(f'WARNING: {pathtokeyfile.name}: Too FEW hits returned from phmmer: {len(hits)}')
-        else:
-            return hits
-
-    elif relation == 'MAXIMUM':
-        if hitnum >= hitthresh:
-            raise Exception(f'Too MANY hits returned from phmmer: {len(hits)}')
-        else:
-            return hits
+    if relation == 'MINIMUM' and hitnum <= hitthresh:
+        raise ValueError(f'WARNING: {pathtokeyfile.name}: Too FEW hits returned from phmmer: {len(hits)}')
+    elif relation == 'MAXIMUM' and hitnum >= hitthresh:
+        raise ValueError(f'Too MANY hits returned from phmmer: {len(hits)}')
+    elif relation not in ('MINIMUM','MAXIMUM'):
+        raise ValueError("Relation has to be MINIMUM or MAXIMUM")
+    return hits
 
 
 def get_orgs_from_hitlist(hitlist):
@@ -127,43 +122,35 @@ def process_phmmerhits(pathtophmmer, pdbid, minhits, maxhits, redo=False):
     print(f'MAXHITS: {maxhits}')
     print(f'OVERWRITE: {redo}\n')
 
-    try:
-        keyfilepaths = check_two_keyfiles(pathtophmmer, pdbid)
-    except Exception as e:
-        print(e)
+    keyfilepaths = get_two_keyfiles(pathtophmmer, pdbid) 
 
-    if keyfilepaths:
-        hits = {}
-        for keyfile in keyfilepaths:
-            try:
-                hitlist = check_hit_nr(keyfile, minhits, 'MINIMUM') 
-                hits[keyfile] = hitlist
-            except Exception as e:
-                print(e)
-                break
-        if len(hits) == 2:
-            keylist = []
-            for keyfile, hitlist in hits.items():
-                orgset, orgdict = get_orgs_from_hitlist(hitlist) 
-                hits[keyfile] = (orgset, orgdict)
+    hits = {}
+    for keyfile in keyfilepaths:
+        hits[keyfile] = get_hit_list(keyfile, minhits, 'MINIMUM') 
+    if len(hits) != 2:
+        raise ValueError("Incorrect number of lists of hits.") 
+    for keyfile, hitlist in hits.items():
+        orgset, orgdict = get_orgs_from_hitlist(hitlist) 
+        hits[keyfile] = (orgset, orgdict)
 
-            orgsets = [entry[0] for entry in hits.values()]
-            masterorgset = match_orgtags(*orgsets)
+    orgsets = [entry[0] for entry in hits.values()]
+    masterorgset = match_orgtags(*orgsets)
 
-            if len(masterorgset) >= maxhits:
-                print(f'ATTENTION: Number of seqs for {pdbid} {len(masterorgset)} exceeded limit of {maxhits}!')
-                print(f'           Matched keyfiles are reduced to {maxhits} sequences.')
-                masterlist = list(masterorgset)
-                masterorgset = set(masterlist[0:maxhits])
+    if len(masterorgset) >= maxhits: # TODO list of setsare still unordered
+        print(f'ATTENTION: Number of seqs for {pdbid} {len(masterorgset)} exceeded limit of {maxhits}!')
+        print(f'           Matched keyfiles are reduced to {maxhits} sequences.')
+        masterlist = list(masterorgset)
+        masterorgset = set(masterlist[0:maxhits])
 
-            for keyfile, entry in hits.items():
-                headers = select_seqheader_from_org(masterorgset, entry[1])
-                hits[keyfile] = headers
+    for keyfile, entry in hits.items():
+        hits[keyfile] = select_seqheader_from_org(masterorgset, entry[1])
+    
 
-            for keyfile, entry in hits.items():
-                outfile = matched_keyfile_formatter(keyfile)
-                outpath = pathtophmmer.joinpath(outfile)
-                keylist.append(outpath)
-                writeout_list(list(entry), outpath)
+    keylist = []
+    for keyfile, entry in hits.items(): # TODO do you need two for loops
+        outfile = matched_keyfile_formatter(keyfile)
+        outpath = pathtophmmer / outfile
+        keylist.append(outpath)
+        writeout_list(list(entry), outpath) # TODO check if list is needed
 
-            return keylist[0], keylist[1]
+    return keylist[0], keylist[1]
