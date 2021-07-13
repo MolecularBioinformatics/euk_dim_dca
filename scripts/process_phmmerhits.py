@@ -17,7 +17,7 @@ Where the organism is the 5-letter tag at the end of EntryName.
 
 from pathlib import Path
 
-from io_utils import readin_list, writeout_list, matched_keyfile_formatter,get_globbed_list
+import io_utils as io
 
 
 def get_two_keyfiles(pathtophmmer, pdbid):
@@ -30,7 +30,7 @@ def get_two_keyfiles(pathtophmmer, pdbid):
     """
 
     keyfilefmt = f'{pdbid}*_refseq_phmmer.keyfile' 
-    keyfiles = get_globbed_list(pathtophmmer, keyfilefmt)
+    keyfiles = io.get_globbed_list(pathtophmmer, keyfilefmt)
 
     if len(keyfiles) != 2:
         raise ValueError(f'Number of keyfiles {len(keyfiles)} not equal to 2:\n{keyfiles}') 
@@ -45,7 +45,7 @@ def get_hit_list(pathtokeyfile, hitthresh, relation):
     :returns hits: list
     """
 
-    hits = readin_list(pathtokeyfile)
+    hits = io.readin_list(pathtokeyfile)
     hitnum = len(hits)
     
     if relation == 'MINIMUM' and hitnum <= hitthresh:
@@ -148,9 +148,9 @@ def process_phmmerhits(pathtophmmer, pdbid, minhits, maxhits, redo=False):
 
     keylist = []
     for keyfile, entry in hits.items(): # TODO do you need two for loops
-        outfile = matched_keyfile_formatter(keyfile)
+        outfile = io.matched_keyfile_formatter(keyfile)
         outpath = pathtophmmer / outfile
         keylist.append(outpath)
-        writeout_list(list(entry), outpath) # TODO check if list is needed
+        io.writeout_list(list(entry), outpath) # TODO check if list is needed
 
     return keylist[0], keylist[1]
