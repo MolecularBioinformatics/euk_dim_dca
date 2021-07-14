@@ -8,7 +8,7 @@ import pytest
 
 sys.path.append("../scripts/")
 
-from process_phmmerhits import get_two_keyfiles, get_hit_list, get_orgs_from_hitlist
+from process_phmmerhits import get_two_keyfiles, get_hit_list, get_orgs_from_hitlist, select_seqheader_from_org
 from ordered_set import OrderedSet
 
 def test_get_two_keyfiles_globber():
@@ -62,7 +62,17 @@ def test_get_orgs_from_hitlist():
     res_orgset, res_orgdict = get_orgs_from_hitlist(hitlist)
     correct_orgset = OrderedSet(['HUMAN','TOXCA','PANTR'])
     correct_orgdict = {'HUMAN':['tr|_HUMAN'],
-                       'TOXCA':['sp|TOXCA','tr|TOXCA'],
-                       'PANTR':['sp|PANTR']}
+                       'TOXCA':['sp|_TOXCA','tr|_TOXCA'],
+                       'PANTR':['sp|_PANTR']}
     assert(res_orgset == correct_orgset)
-    assert(res_orgset == correct_orgdict)
+    assert(res_orgdict == correct_orgdict)
+
+
+def test_select_seqheader_from_org():
+    orgset = OrderedSet(['HUMAN','TOXCA','PANTR'])
+    orgdict = {'HUMAN':['tr|_HUMAN'],
+               'TOXCA':['sp|_TOXCA','tr|_TOXCA'],
+               'PANTR':['sp|_PANTR']}
+    res_headerset = select_seqheader_from_org(orgset, orgdict)
+    correct_headerset = OrderedSet(['tr|_HUMAN', 'sp|_TOXCA', 'sp|_PANTR'])
+    assert(res_headerset == correct_headerset)
