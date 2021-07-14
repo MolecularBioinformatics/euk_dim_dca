@@ -21,7 +21,8 @@ import io_utils as io
 
 
 def get_two_keyfiles(pathtophmmer, pdbid):
-    """Checks dir for exactly 2 phmmer keyfiles for pdbid
+    """Checks dir for exactly 2 phmmer keyfiles for pdbid.
+    Returns list of these two keyfiles if found.
 
     :param pathtophmmer: pathlib.PosixPath
     :param pdbid: str, 4-letter PDB id
@@ -38,11 +39,15 @@ def get_two_keyfiles(pathtophmmer, pdbid):
 
 
 def get_hit_list(pathtokeyfile, hitthresh, relation):
-    """Checks that num of hits in keyfile is higher
-    than minhitnum and lower than maxhitnum,
+    """Checks that num of hits in keyfile is
+    between minhitnum and maxhitnum, if so,
     returns list of hits.
 
-    :returns hits: list
+    :param pathtokeyfile: pathlib.PosixPath
+    :param hitthresh: int, max num of hits allowed
+    :param relation: str, 'MINIMUM' or 'MAXIMUM'
+
+    :returns hits: list of fasta seq ids
     """
 
     hits = io.readin_list(pathtokeyfile)
@@ -59,7 +64,14 @@ def get_hit_list(pathtokeyfile, hitthresh, relation):
 
 def get_orgs_from_hitlist(hitlist):
     """Takes list hits, returns set of all orgs
-    and dict with headers from each organism"""
+    and dict with headers from each organism.
+    
+    :param hitlist: list of fasta seq ids
+    
+    :returns orgset: set of organisms
+    :returns orgdict: dict with keys as orgtags, 
+        values as a list of fasta seq ids 
+    """
 
     orgdict = {}
 
@@ -79,6 +91,7 @@ def select_seqheader_from_org(orgset, orgheaderdict):
 
     :param orgset: set of organism tags
     :param orgheaderdict: dict of {org: header, ...}
+
     :returns: set of headers
     """
 
@@ -100,7 +113,11 @@ def select_seqheader_from_org(orgset, orgheaderdict):
 
 def match_orgtags(orgset, *orgsets):
     """Takes in minimum 1 set of orgtags.
-    Returns a set with intersection of orgsets"""
+    Returns a set with intersection of orgsets
+    
+    :param orgset: set of organism tags
+    
+    :returns: set of common organisms"""
     if not orgsets:
         return orgset
     else:
@@ -117,6 +134,8 @@ def process_phmmerhits(pathtophmmer, pdbid, minhits, maxhits, redo=False):
     :param pdbid: str, 4-letter PDB id 
     :param minhits: int, minimum number of hits
     :param maxhits: int, maximum number of hits
+
+    :returns keylist: list of fasta seq ids
     """
     print(f'MINHITS: {minhits}')
     print(f'MAXHITS: {maxhits}')
