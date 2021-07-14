@@ -8,7 +8,7 @@ import pytest
 
 sys.path.append("../scripts/")
 
-from process_phmmerhits import get_two_keyfiles, get_hit_list, get_orgs_from_hitlist, select_seqheader_from_org
+from process_phmmerhits import *
 from ordered_set import OrderedSet
 
 def test_get_two_keyfiles_globber():
@@ -76,3 +76,11 @@ def test_select_seqheader_from_org():
     res_headerset = select_seqheader_from_org(orgset, orgdict)
     correct_headerset = OrderedSet(['tr|_HUMAN', 'sp|_TOXCA', 'sp|_PANTR'])
     assert(res_headerset == correct_headerset)
+
+
+def test_match_orgtags():
+    orgset1 = OrderedSet(['HUMAN','TOXCA','PANTR'])
+    orgset2 = OrderedSet(['HUMAN','MOUSE','TOXCA'])
+    res_orgset = match_orgtags(orgset1, orgset2)
+    correct_orgset = OrderedSet(['HUMAN', 'TOXCA'])
+    assert(res_orgset == correct_orgset)
