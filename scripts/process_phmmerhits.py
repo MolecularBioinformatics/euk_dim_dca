@@ -4,6 +4,11 @@ process_phmmerhits.py
 
 Takes in a phmmer-parsed-out keyfile.
 
+Checks that a minimum number (100) of seq hits is found,
+caps the total number of seq hits (600).
+
+Matches organisms and returns 
+
 Checks if more than 100 seq hits are found,
 puts a cap of total number of sequences at 600,
 and matches organisms.
