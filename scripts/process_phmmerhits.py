@@ -23,6 +23,7 @@ Where the organism is the 5-letter tag at the end of EntryName.
 from pathlib import Path
 
 import io_utils as io
+from ordered_set import OrderedSet 
 
 
 def get_two_keyfiles(pathtophmmer, pdbid):
@@ -73,7 +74,7 @@ def get_orgs_from_hitlist(hitlist):
     
     :param hitlist: list of fasta seq ids
     
-    :returns orgset: set of organisms
+    :returns orgset: OrderedSet of organisms
     :returns orgdict: dict with keys as orgtags, 
         values as a list of fasta seq ids 
     """
@@ -86,7 +87,7 @@ def get_orgs_from_hitlist(hitlist):
             orgdict[org] = [hit]
         else:
             orgdict[org].append(hit) 
-    orgset = set(orgdict.keys()) 
+    orgset = OrderedSet(orgdict.keys()) 
     return orgset, orgdict
 
 
@@ -94,10 +95,10 @@ def select_seqheader_from_org(orgset, orgheaderdict):
     """Selects for each org a fasta header for
     seq from that org. Prioritizes swissprot proteins.
 
-    :param orgset: set of organism tags
+    :param orgset: OrderedSet of organism tags
     :param orgheaderdict: dict of {org: header, ...}
 
-    :returns: set of headers
+    :returns: OrderedSet of headers
     """
 
     headerlist = []
@@ -113,20 +114,20 @@ def select_seqheader_from_org(orgset, orgheaderdict):
             headerlist.append(headers[0])
         else:
             headerlist.append(headers[spseqid])
-    return set(headerlist) 
+    return OrderedSet(headerlist) 
 
 
 def match_orgtags(orgset, *orgsets):
     """Takes in minimum 1 set of orgtags.
     Returns a set with intersection of orgsets
     
-    :param orgset: set of organism tags
+    :param orgset: OrderedSet of organism tags
     
     :returns: set of common organisms"""
     if not orgsets:
         return orgset
     else:
-        return orgset.intersection(*orgsets)
+        return orgset.intersection(*orgsets) 
 
 
 def process_phmmerhits(pathtophmmer, pdbid, minhits, maxhits, redo=False):
@@ -164,7 +165,7 @@ def process_phmmerhits(pathtophmmer, pdbid, minhits, maxhits, redo=False):
         print(f'ATTENTION: Number of seqs for {pdbid} {len(masterorgset)} exceeded limit of {maxhits}!')
         print(f'           Matched keyfiles are reduced to {maxhits} sequences.')
         masterlist = list(masterorgset)
-        masterorgset = set(masterlist[0:maxhits])
+        masterorgset = OrderedSet(masterlist[0:maxhits])
 
     for keyfile, entry in hits.items():
         hits[keyfile] = select_seqheader_from_org(masterorgset, entry[1])
