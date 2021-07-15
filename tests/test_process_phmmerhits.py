@@ -51,7 +51,7 @@ def test_get_hit_list_error_relation():
         get_hit_list(testkeyfile, 1000, 'DEANRONALD')
 
 def test_get_hit_list(rel='MINIMUM', thresh=0):
-    minikeyfile=Path('../testdata/1c0f_A_refseq_phmmer.testkeyfile')
+    minikeyfile=Path('../testdata/1111_A_refseq_phmmer.keyfile')
     res_hitlist = get_hit_list(minikeyfile, thresh, rel)
     correct_hitlist = ['tr|_HUMAN', 'sp|_TOXCA', 'tr|_TOXCA', 'sp|_PANTR']
     assert(res_hitlist == correct_hitlist)
@@ -84,3 +84,28 @@ def test_match_orgtags():
     res_orgset = match_orgtags(orgset1, orgset2)
     correct_orgset = OrderedSet(['HUMAN', 'TOXCA'])
     assert(res_orgset == correct_orgset)
+
+
+def test_process_phmmerhits_not_enough_files():
+    phmmerdir = Path('../testdata')
+    pdbid = '1d4x'
+    minhits, maxhits = 0, 100
+    with pytest.raises(ValueError):
+        process_phmmerhits(phmmerdir, pdbid, minhits, maxhits)
+
+def test_process_phmmerhits_incorrect_nr_hitlist():
+    phmmerdir = Path('../testdata')
+    pdbid = '1d0d'
+    minhits, maxhits = 10, 100
+    with pytest.raises(ValueError):
+        process_phmmerhits(phmmerdir, pdbid, minhits, maxhits)
+
+def test_process_phmmerhits():
+    phmmerdir = Path('../testdata')
+    pdbid = '1111'
+    minhits, maxhits = 0, 10
+    keylist1 = Path('../testdata/1111_S_refseq_phmmer_matched.keyfile')
+    keylist2 = Path('../testdata/1111_A_refseq_phmmer_matched.keyfile')
+    reskey1, reskey2 = process_phmmerhits(phmmerdir, pdbid, minhits, maxhits)
+    assert(reskey1 == keylist1)
+    assert(reskey2 == keylist2)
