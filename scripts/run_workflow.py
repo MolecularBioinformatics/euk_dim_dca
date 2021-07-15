@@ -79,55 +79,55 @@ class InputConfig():
                     c.write(f'{key}={item}\n') 
 
 
-def findrefseqs(ICObject, redo): 
+def findrefseqs(icObject, redo): 
     """Finds two refseqs for pdbid.
 
-    :param ICObject: InputConfig object
-    :returns ICObject: InputConfig object with updated attributes.
+    :param icObject: InputConfig object
+    :returns icObject: InputConfig object with updated attributes.
     """
     try:
-        refseqpaths = find_refseq_files(ICObject.pdbid, ICObject.fastapath)
+        refseqpaths = find_refseq_files(icObject.pdbid, icObject.fastapath)
         print(f'Found these refseq files:\n{refseqpaths}')
-        ICObject.refseq1=refseqpaths[0]
-        ICObject.refseq2=refseqpaths[1]
+        icObject.refseq1=refseqpaths[0]
+        icObject.refseq2=refseqpaths[1]
     except Exception as e:
         print(e)
     finally:
-        return ICObject
+        return icObject
 
 
-def runphmmer(ICObj, rerun):  # test on actually running phmmer
+def runphmmer(icObj, rerun):  # test on actually running phmmer
     """Runs phmmer on seq.
     Takes and returns an InputConfigObj."""
     try:
-        ICObj.logfile1 = run_phmmer(ICObj.dbpath, ICObj.refseq1, ICObj.phmmerpath, rerun)
+        icObj.logfile1 = run_phmmer(icObj.dbpath, icObj.refseq1, icObj.phmmerpath, rerun)
     except Exception as e:
         print(e)
     try:
-        ICObj.logfile2 = run_phmmer(ICObj.dbpath, ICObj.refseq2, ICObj.phmmerpath, rerun)
+        icObj.logfile2 = run_phmmer(icObj.dbpath, icObj.refseq2, icObj.phmmerpath, rerun)
     except Exception as e:
         print(e)
     finally:
-        return ICObj
+        return icObj
 
 
-def parsephmmer(ICObj, overwrite):
+def parsephmmer(icObj, overwrite):
     """Parses phmmer log to keyfile.
     Takes and returns and InputConfigObj.
     Overwrite is a bool."""
     try:
-        ICObj.keyfile1 = parse_accid_phmmerlog(ICObj.logfile1, ICObj.phmmerpath, overwrite)
+        icObj.keyfile1 = parse_accid_phmmerlog(icObj.logfile1, icObj.phmmerpath, overwrite)
     except Exception as fnotfound:
         print(fnotfound)
     try:
-        ICObj.keyfile2 = parse_accid_phmmerlog(ICObj.logfile2, ICObj.phmmerpath, overwrite)
+        icObj.keyfile2 = parse_accid_phmmerlog(icObj.logfile2, icObj.phmmerpath, overwrite)
     except Exception as fnotfound:
         print(fnotfound)
     finally:
-        return ICObj
+        return icObj
 
 
-def processphmmer(ICObj, overwrite):
+def processphmmer(icObj, overwrite):
     """Checks total number of hits in keyfile, matches organisms.
        Returns processed keyfile"""
 
@@ -135,30 +135,30 @@ def processphmmer(ICObj, overwrite):
     maxhits = 600
 
     try:
-        ICObj.matchedkeyfile1, ICObj.matchedkeyfile2 = process_phmmerhits(ICObj.phmmerpath, ICObj.pdbid, minhits, maxhits, overwrite)
-    except:
-        raise Exception('Unable to process keyfiles.')
+        icObj.matchedkeyfile1, icObj.matchedkeyfile2 = process_phmmerhits(icObj.phmmerpath, icObj.pdbid, minhits, maxhits, overwrite)
+    except ValueError as valerr: 
+        raise ValueError('Unable to process keyfiles.') from valerr
     finally:
-        return ICObj
+        return icObj
 
 
-def runeasel(ICObj, rerun):
+def runeasel(icObj, rerun):
     """Runs easel on a keyfile.
     Extracts sequences from a db."""
     try:
-        ICObj.eslfastafile1 = run_easel(ICObj.easelpath, ICObj.dbpath, ICObj.phmmerpath, ICObj.matchedkeyfile1, rerun)
+        icObj.eslfastafile1 = run_easel(icObj.easelpath, icObj.dbpath, icObj.phmmerpath, icObj.matchedkeyfile1, rerun)
     except Exception as e:
         print(e)
     try:
-        ICObj.eslfastafile2 = run_easel(ICObj.easelpath, ICObj.dbpath, ICObj.phmmerpath, ICObj.matchedkeyfile2, rerun)
+        icObj.eslfastafile2 = run_easel(icObj.easelpath, icObj.dbpath, icObj.phmmerpath, icObj.matchedkeyfile2, rerun)
     except Exception as e:
         print(e)
-    return ICObj
+    return icObj
 
 
-tasknames = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel']
+TASKNAMES = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel'] 
 
-tasks = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
+TASKS = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
          'runphmmer': ('2. run phmmer on refseq\n', runphmmer),
          'parsephmmer': ('3. parse phmmer into keyfile\n', parsephmmer),
          'processphmmer': ('4. process keyfile and match organisms\n', processphmmer),
@@ -168,9 +168,9 @@ def run_workflow(configf, pathsf, tasknamelist, redo):
     """Runs eukdimerdca workflow"""
 
     try:
-        IC = InputConfig(configf, pathsf)
+        ic = InputConfig(configf, pathsf) # TODO variable start with lower case
     except IOError:
-        IC = None
+        ic = None
 
     for taskname in tasknamelist: 
         if taskname not in tasknames:
@@ -178,9 +178,9 @@ def run_workflow(configf, pathsf, tasknamelist, redo):
         else:
             print(f'--- {taskname} --- {tasks[taskname][0]}')
             torun = tasks[taskname][1] 
-            IC = torun(IC, redo)
+            ic = torun(ic, redo)
             print('\n')
-        IC.update_config_var(configf)
+        ic.update_config_var(configf)
 
 if __name__=="__main__":
 
