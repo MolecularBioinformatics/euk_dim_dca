@@ -117,12 +117,16 @@ def parsephmmer(icObj, overwrite):
     Overwrite is a bool."""
     try:
         icObj.keyfile1 = parse_accid_phmmerlog(icObj.logfile1, icObj.phmmerpath, overwrite)
-    except Exception as fnotfound:
+    except FileNotFoundError as fnotfound:
         print(fnotfound)
+    except ValueError as fileempty:
+        print(filempty)
     try:
         icObj.keyfile2 = parse_accid_phmmerlog(icObj.logfile2, icObj.phmmerpath, overwrite)
-    except Exception as fnotfound:
+    except FileNotFoundError as fnotfound:
         print(fnotfound)
+    except ValueError as fileempty:
+        print(filempty)
     finally:
         return icObj
 
@@ -168,7 +172,7 @@ def run_workflow(configf, pathsf, tasknamelist, redo):
     """Runs eukdimerdca workflow"""
 
     try:
-        ic = InputConfig(configf, pathsf) # TODO variable start with lower case
+        ic = InputConfig(configf, pathsf) 
     except IOError:
         ic = None
 
