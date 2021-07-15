@@ -27,15 +27,12 @@ def get_accidlist(pathtophmmerlog):
     accidlist=[]
 
     with open(pathtophmmerlog, 'r') as ph:
-        while True:  # TODO: simple for loop over lines?
-            line = ph.readline()
+        for line in ph:
             text = line.strip()
-            if "inclusion threshold" in line:  # TODO: restructure this to reduce
-                break 
-            if text:
-                firstletter = text[0]
-                if firstletter.isnumeric():
-                    accidlist.append(text.split()[8])
+            if "inclusion threshold" in text:
+                break
+            elif text and text[0].isnumeric():
+                accidlist.append(text.split()[8])
         return accidlist
 
 
