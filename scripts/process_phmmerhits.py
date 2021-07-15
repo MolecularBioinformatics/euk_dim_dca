@@ -130,7 +130,7 @@ def match_orgtags(orgset, *orgsets):
         return orgset.intersection(*orgsets) 
 
 
-def process_phmmerhits(pathtophmmer, pdbid, minhits, maxhits, redo=False):
+def process_phmmerhits(pathtophmmer, pdbid, minhits, maxhits, redo=False):  # TODO: refactor and break up into more functions
     """Performs post-processing of phmmer hits.
     Checks for suitable number of hits returned.
     Matches organisms for the hits and returns
@@ -161,21 +161,23 @@ def process_phmmerhits(pathtophmmer, pdbid, minhits, maxhits, redo=False):
     orgsets = [entry[0] for entry in hits.values()]
     masterorgset = match_orgtags(*orgsets)
 
-    if len(masterorgset) >= maxhits: # TODO list of setsare still unordered
+    if len(masterorgset) >= maxhits: 
         print(f'ATTENTION: Number of seqs for {pdbid} {len(masterorgset)} exceeded limit of {maxhits}!')
         print(f'           Matched keyfiles are reduced to {maxhits} sequences.')
         masterlist = list(masterorgset)
         masterorgset = OrderedSet(masterlist[0:maxhits])
 
-    for keyfile, entry in hits.items():
+    for keyfile, entry in hits.items(): 
         hits[keyfile] = select_seqheader_from_org(masterorgset, entry[1])
-    
 
+    print(hits)
+    
     keylist = []
-    for keyfile, entry in hits.items(): # TODO do you need two for loops
+    for keyfile in hits.keys():
         outfile = io.matched_keyfile_formatter(keyfile)
         outpath = pathtophmmer / outfile
         keylist.append(outpath)
-        io.writeout_list(list(entry), outpath) # TODO check if list is needed
+        print(hits)
+        io.writeout_list(list(hits[keyfile]), outpath) 
 
     return keylist[0], keylist[1]
