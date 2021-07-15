@@ -4,6 +4,10 @@ parse_accid_phmmerlog.py
 
 Parses a phmmerlog file, extracts all accids
 of sequences up until the inclusion threshold.
+
+Writes these accids into a keyfile.
+
+Returns the path to the keyfile.
 """
 
 from pathlib import Path
@@ -23,10 +27,10 @@ def get_accidlist(pathtophmmerlog):
     accidlist=[]
 
     with open(pathtophmmerlog, 'r') as ph:
-        while True:
+        while True:  # TODO: simple for loop over lines?
             line = ph.readline()
             text = line.strip()
-            if "inclusion threshold" in line:
+            if "inclusion threshold" in line:  # TODO: restructure this to reduce
                 break 
             if text:
                 firstletter = text[0]
@@ -41,6 +45,8 @@ def parse_accid_phmmerlog(pathtophmmerlog, outpath, overwrite):
 
     :param pathtophmmerlog: pathlib.PosixPath
     :param outpath: pathlib.PosixPath, file and path to output
+
+    :returns keyfilepath: pathlib.PosixPath, path to keyfile
     """
     filename = keyfile_formatter(pathtophmmerlog)
     keyfilepath = outpath.joinpath(filename)
