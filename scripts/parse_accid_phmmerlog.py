@@ -54,6 +54,8 @@ def parse_accid_phmmerlog(pathtophmmerlog, outpath, overwrite):
         raise ValueError(f'PHMMERLOG EMPTY: File {pathtophmmerlog} contains nothing!')
     else:
         acclist = get_accidlist(pathtophmmerlog)
+        if not acclist:
+            raise ValueError(f'NO HITS: No hits above incl. thresh found in {pathtophmmerlog}')
         if not keyfilepath.is_file():
             writeout_list(acclist, keyfilepath) 
         elif overwrite:
