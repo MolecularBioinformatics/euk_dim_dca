@@ -101,12 +101,16 @@ def runphmmer(icObj, rerun):  # test on actually running phmmer
     Takes and returns an InputConfigObj."""
     try:
         icObj.logfile1 = run_phmmer(icObj.dbpath, icObj.refseq1, icObj.phmmerpath, rerun)
-    except Exception as e:
+    except FileNotFoundError as e:
         print(e)
+    except ValueError as valerr:
+        print(valerr)
     try:
         icObj.logfile2 = run_phmmer(icObj.dbpath, icObj.refseq2, icObj.phmmerpath, rerun)
-    except Exception as e:
+    except FileNotFoundError as e:
         print(e)
+    except ValueError as valerr:
+        print(valerr)
     finally:
         return icObj
 
@@ -179,11 +183,10 @@ def run_workflow(configf, pathsf, tasknamelist, redo):
     for taskname in tasknamelist: 
         if taskname not in tasknames:
             raise ValueError(f'{taskname} not a valid task. Try again.')
-        else:
-            print(f'--- {taskname} --- {tasks[taskname][0]}')
-            torun = tasks[taskname][1] 
-            ic = torun(ic, redo)
-            print('\n')
+        print(f'--- {taskname} --- {tasks[taskname][0]}')
+        torun = tasks[taskname][1] 
+        ic = torun(ic, redo)
+        print('\n')
         ic.update_config_var(configf)
 
 if __name__=="__main__":
