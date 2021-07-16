@@ -21,7 +21,7 @@ def refseq_formatter(pdbid):
     return f'{pdbid}*refseq.fasta'
 
 
- def phmmerlog_formatter(seqpath):  
+def phmmerlog_formatter(seqpath):  
     """Formats phmmer output files for given seqfile.
     
     :param seqpath: pathlib.PosixPath

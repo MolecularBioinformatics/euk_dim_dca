@@ -12,13 +12,17 @@ from io_utils import get_globbed_list, refseq_formatter
 
 def iscorrect_pdbid(pdbid):
     """Checks if pdbid is a 4-char string
-    Returns the lowercase pdbid"""
+    Returns the lowercase pdbid
+    
+    :param pdbid: str, 4-letter pdb id
+    
+    :returns: str
+    """
     if not isinstance(pdbid, str):
         raise TypeError('PDB ID must be str.')
     elif not len(pdbid)==4:
-        raise Exception('PDB ID must have 4 characters.')
-    else:
-        return pdbid.lower()
+        raise ValueError('PDB ID must have 4 characters.')
+    return pdbid.lower()
 
 
 def find_refseq_files(pdbid, dirpath):
@@ -29,22 +33,17 @@ def find_refseq_files(pdbid, dirpath):
 
     :param pdbid: str
     :param pathtodir: pathlib.PosixPath
+
     :returns: list of pathlib.PosixPaths
     """
-    try:
-        fourletter=iscorrect_pdbid(pdbid)
-    except:
-        raise Exception('PDB ID incorrect!')
+    fourletter=iscorrect_pdbid(pdbid)
 
-    if not fourletter:
-        raise Exception('No PDBID. Give correct PDBID.')
-    else:
-        refmt_pdbid = refseq_formatter(fourletter)
-        fileslist = get_globbed_list(dirpath, refmt_pdbid)
-        if len(fileslist) == 0:
-            raise FileNotFoundError(f'No refseq files found for {pdbid}.')
-        elif len(fileslist) != 2:
-            raise Exception('Number refseq files: {len(fileslist)} not equal to 2!')
-        else:
-            return fileslist
+    refmt_pdbid = refseq_formatter(fourletter)
+    fileslist = get_globbed_list(dirpath, refmt_pdbid)
+    if len(fileslist) == 0:
+        raise FileNotFoundError(f'No refseq files found for {pdbid}.')
+    elif len(fileslist) != 2:
+        raise ValueError('Number refseq files: {len(fileslist)} not equal to 2!')
+
+    return fileslist
 
