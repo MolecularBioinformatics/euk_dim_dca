@@ -15,8 +15,8 @@ from pathlib import Path
 
 from io_utils import does_target_exist
 
-def phmmerlog_formatter(seqpath):
-    """
+def phmmerlog_formatter(seqpath):  # why is this not in io_util?
+"""
     Formats phmmer output files for given seqfile.
     
     :param seqpath: pathlib.PosixPath
@@ -49,20 +49,15 @@ def run_phmmer(databasepath, seqpath, phmmerpath, redo):
 
     if not does_target_exist(seqpath, 'file'):
         raise FileNotFoundError(f'REFSEQ FILE MISSING: Could not find {seqpath}!')
-    else:
-        if does_target_exist(outpath, 'file') and redo == False:
-            print(f'Phmmer logfile: ({outpath.name}) already exists in {outpath.parent}') 
-            return outpath
-        else:
-            try:
-                start = time.perf_counter()
-                proc = subprocess.run(cmdargs)
-                stop = time.perf_counter()
-                if proc.returncode == 0:
-                    print(f'Phmmer ran in {stop-start:0.4f} seconds')
-                    print(f'Phmmer log stored in {outpath}')
-                else:
-                    raise Exception  # not sure how to best catch phmmer's internal errors
-                return outpath
-            except:
-                raise Exception(f'Phmmer run unsuccessful for {seqpath}')
+    elif does_target_exist(outpath, 'file') and redo == False:
+        print(f'Phmmer logfile: ({outpath.name}) already exists in {outpath.parent}') 
+        return outpath
+
+    start = time.perf_counter()
+    proc = subprocess.run(cmdargs)
+    stop = time.perf_counter()
+    if proc.returncode != 0:
+        raise ValueError(f'Phmmer run unsuccessful for {seqpath}')
+    print(f'Phmmer ran in {stop-start:0.4f} seconds')
+    print(f'Phmmer log stored in {outpath}')
+    return outpath
