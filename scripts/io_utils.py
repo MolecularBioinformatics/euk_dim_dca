@@ -51,6 +51,17 @@ def matched_keyfile_formatter(pathtophmmerlog):
     return f'{pathtophmmerlog.stem}_matched.keyfile'
 
 
+def easeled_seq_formatter(keyfilepath):
+    """Returns format of FASTA file with seqs
+    extracted from easel
+
+    :param keyfilepath: pathlib.PosixPath to keyfile
+
+    :returns: str, outfile name
+    """
+    return f'{keyfilepath.stem}.fasta'
+
+
 def get_globbed_list(pathtodir, target):
     """Searches directory for files matching
     a certain target pattern.
