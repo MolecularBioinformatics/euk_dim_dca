@@ -7,23 +7,14 @@ Runs phmmer for a given sequence and database
 Requirements:
 1. Phmmer installed and on system path
 2. Input of seq, db, and path to output.
+3. redo boolean flag if phmmer needs to be rerun or not
 """
 
 import time
 import subprocess
 from pathlib import Path
 
-from io_utils import does_target_exist
-
-def phmmerlog_formatter(seqpath):  # why is this not in io_util?
-"""
-    Formats phmmer output files for given seqfile.
-    
-    :param seqpath: pathlib.PosixPath
-    :returns: str, outfile name
-    """
-    return f'{seqpath.stem}_phmmer.log'
-
+from io_utils import does_target_exist, phmmerlog_formatter
 
 def run_phmmer(databasepath, seqpath, phmmerpath, redo):
     """
@@ -34,6 +25,7 @@ def run_phmmer(databasepath, seqpath, phmmerpath, redo):
     --> does this also require SSI index to be made in same folder?
     :param seqpath: pathlib.PosixPath, input seqfile
     :param phmmerpath: pathlib.PosixPath
+    
     :returns: outpath or None
     """
     filename = phmmerlog_formatter(seqpath)

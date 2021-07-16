@@ -12,17 +12,42 @@ from pathlib import Path
 
 def refseq_formatter(pdbid):
     """Returns formatted refseq fasta 
-    str expression as a regex matching string"""
+    str expression as a regex matching string
+    
+    :param pdbid: str, 4-letter pdbid
+    
+    :returns: str
+    """
     return f'{pdbid}*refseq.fasta'
 
 
+ def phmmerlog_formatter(seqpath):  
+    """Formats phmmer output files for given seqfile.
+    
+    :param seqpath: pathlib.PosixPath
+
+    :returns: str, outfile name
+    """
+    return f'{seqpath.stem}_phmmer.log'
+
+
 def keyfile_formatter(pathtophmmerlog):
-    """Returns formatted keyfile from phmmerlogfile"""
+    """Returns formatted keyfile from phmmerlogfile
+    
+    :param pathtophmmerlog: pathlib.PosixPath
+    
+    :return: str
+    """
     return f'{pathtophmmerlog.stem}.keyfile'
 
 
 def matched_keyfile_formatter(pathtophmmerlog):
-    """Returns formatted keyfile from phmmerlogfile"""
+    """Returns formatted keyfile from phmmerlogfile
+    
+    :param pathtophmmerlog: pathlib.PosixPath
+    
+    :return: str
+    """
     return f'{pathtophmmerlog.stem}_matched.keyfile'
 
 
