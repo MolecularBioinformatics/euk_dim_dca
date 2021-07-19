@@ -41,7 +41,7 @@ def run_easel(easelpath, databasepath, phmmerpath, keyfilepath, redo):
     f.close()
 
     if proc.returncode != 0:
-        return ValueError('Easel extract unsuccessful!')
+        raise ValueError('Easel extract unsuccessful!')
 
     print(f'Retrieved seqs in fasta file: {outpath}')
     return outpath
