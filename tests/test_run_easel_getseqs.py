@@ -28,7 +28,7 @@ def test_run_easel_file_already_exists_no_redo():
 
 def test_run_easel_file_easel_unsuccessful():
     easelpath = Path('/home/yin/UiT/Tools/easel/miniapps')
-    dbpath = Path()
+    dbpath = Path('uniprot.fasta') # doesn't exist
     phmmerpath = Path('../testdata')
     keyfilepath = Path('../testdata/1c0f_A_refseq_phmmer_matched.keyfile')
     with pytest.raises(ValueError):
