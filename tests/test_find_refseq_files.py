@@ -25,15 +25,6 @@ def test_iscorrect_pdbid_lower():
 def test_refseq_formatter():
     assert refseq_formatter('1aud') == '1aud*refseq.fasta'
 
-def test_get_globbed_list():  # TODO: this belongs to testing io-utils!
-    dirpath = Path('../testdata')
-    tworefseqs = '1c0f*refseq.fasta'
-    onerefseqs = '1d4x*refseq.fasta'
-    nonrefseqs = '1euc*refseq.fasta'
-    assert len(get_globbed_list(dirpath, tworefseqs)) == 2
-    assert len(get_globbed_list(dirpath, onerefseqs)) == 1
-    assert len(get_globbed_list(dirpath, nonrefseqs)) == 0
-
 def test_find_refseq_files_twofiles():
     dirpath = Path('../testdata')
     two = '1c0f'
