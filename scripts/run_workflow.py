@@ -19,7 +19,8 @@ from run_easel_getseqs import *
 
 
 class InputConfig():
-    """Reads input from pathfile and datafile"""
+    """Object to store names of intermediate files.
+    Reads input from pathfile and datafile"""
 
     def __init__(self, config, paths):
         """Initiates the class"""
@@ -83,6 +84,7 @@ def findrefseqs(icObject, redo):
     """Finds two refseqs for pdbid.
 
     :param icObject: InputConfig object
+    :param redo: T/F - not incorporated, function searches every time
     :returns icObject: InputConfig object with updated attributes.
     """
     try:
@@ -90,8 +92,12 @@ def findrefseqs(icObject, redo):
         print(f'Found these refseq files:\n{refseqpaths}')
         icObject.refseq1=refseqpaths[0]
         icObject.refseq2=refseqpaths[1]
-    except Exception as e:
-        print(e)
+    except TypeError as pdberr:
+        print(pdberr)
+    except FileNotFoundError as nofileerr:
+        print(nofileerr)
+    except ValueError as valerr:
+        print(valerr)
     finally:
         return icObject
 
@@ -181,10 +187,10 @@ def run_workflow(configf, pathsf, tasknamelist, redo):
         ic = None
 
     for taskname in tasknamelist: 
-        if taskname not in tasknames:
+        if taskname not in TASKNAMES:
             raise ValueError(f'{taskname} not a valid task. Try again.')
-        print(f'--- {taskname} --- {tasks[taskname][0]}')
-        torun = tasks[taskname][1] 
+        print(f'--- {taskname} --- {TASKS[taskname][0]}')
+        torun = TASKS[taskname][1] 
         ic = torun(ic, redo)
         print('\n')
         ic.update_config_var(configf)
@@ -192,10 +198,10 @@ def run_workflow(configf, pathsf, tasknamelist, redo):
 if __name__=="__main__":
 
     import argparse
-    parser = argparse.ArgumentParser(usage="python3 %(prog)s [-h] taskname [taskname, ...] --redo")
+    parser = argparse.ArgumentParser(usage="python3 %(prog)s [-h] configfile pathfile taskname [taskname, ...] --redo")
     parser.add_argument("configfile", help="path to config.txt file")
     parser.add_argument("pathfile", help="path to paths.txt file")
-    parser.add_argument("taskname", nargs = '+', help="task to run: findrefseqs, runphmmer, parsephmmer")
+    parser.add_argument("taskname", nargs = '+', help="task to run: findrefseqs, runphmmer, parsephmmer, processphmmer, runeasel")
     parser.add_argument("-r", "--redo", help="True/False to re-parse out keyfile")
     args = parser.parse_args()
 

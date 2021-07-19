@@ -2,8 +2,7 @@
 """
 io_utils.py
 
-Collection of file writing and checking utility functions.
-
+Collection of file writing and checking utility functions.  
 Used with the eukaryotic dimer dca method
 """
 
@@ -28,8 +27,7 @@ def phmmerlog_formatter(seqpath):
     
     :param seqpath: pathlib.PosixPath
 
-    :returns: str, outfile name
-    """
+    :returns: str, outfile name """
     if not isinstance(seqpath, Path):
         raise TypeError('Phmmerlog formatter requires pathlib.PosixPath.')
     return f'{seqpath.stem}_phmmer.log'

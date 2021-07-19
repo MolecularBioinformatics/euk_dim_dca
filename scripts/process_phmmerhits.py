@@ -145,7 +145,7 @@ def process_phmmerhits(pathtophmmer, pdbid, minhits, maxhits, redo=False):  # TO
     """
     print(f'MINHITS: {minhits}')
     print(f'MAXHITS: {maxhits}')
-    print(f'OVERWRITE: {redo}\n')
+    print(f'OVERWRITE: {redo}\n')  # TODO: redo not yet incorporated, it does it automatically every time
 
     keyfilepaths = get_two_keyfiles(pathtophmmer, pdbid) 
 
@@ -170,14 +170,12 @@ def process_phmmerhits(pathtophmmer, pdbid, minhits, maxhits, redo=False):  # TO
     for keyfile, entry in hits.items(): 
         hits[keyfile] = select_seqheader_from_org(masterorgset, entry[1])
 
-    print(hits)
     
     keylist = []
     for keyfile in hits.keys():
         outfile = io.matched_keyfile_formatter(keyfile)
         outpath = pathtophmmer / outfile
         keylist.append(outpath)
-        print(hits)
         io.writeout_list(list(hits[keyfile]), outpath) 
 
     return keylist[0], keylist[1]
