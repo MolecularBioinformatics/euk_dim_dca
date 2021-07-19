@@ -18,6 +18,8 @@ def refseq_formatter(pdbid):
     
     :returns: str
     """
+    if not isinstance(pdbid, str):
+        raise TypeError('Refseq formatter requires str.')
     return f'{pdbid}*refseq.fasta'
 
 
@@ -28,6 +30,8 @@ def phmmerlog_formatter(seqpath):
 
     :returns: str, outfile name
     """
+    if not isinstance(seqpath, Path):
+        raise TypeError('Phmmerlog formatter requires pathlib.PosixPath.')
     return f'{seqpath.stem}_phmmer.log'
 
 
@@ -38,6 +42,8 @@ def keyfile_formatter(pathtophmmerlog):
     
     :return: str
     """
+    if not isinstance(pathtophmmerlog, Path):
+        raise TypeError('Keyfile formatter requires pathlib.PosixPath.')
     return f'{pathtophmmerlog.stem}.keyfile'
 
 
@@ -48,6 +54,8 @@ def matched_keyfile_formatter(pathtophmmerlog):
     
     :return: str
     """
+    if not isinstance(pathtophmmerlog, Path):
+        raise TypeError('Matched keyfile formatter requires pathlib.PosixPath.')
     return f'{pathtophmmerlog.stem}_matched.keyfile'
 
 
@@ -59,6 +67,8 @@ def easeled_seq_formatter(keyfilepath):
 
     :returns: str, outfile name
     """
+    if not isinstance(keyfilepath, Path):
+        raise TypeError('Easel seq formatter requires pathlib.PosixPath.')
     return f'{keyfilepath.stem}.fasta'
 
 
