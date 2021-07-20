@@ -130,6 +130,19 @@ def match_orgtags(orgset, *orgsets):
         return orgset.intersection(*orgsets) 
 
 
+def matched_keyfiles_exist(keyfilepaths, phmmerpath):
+    """Takes in two keyfile paths. Formats filenames 
+    into matched keyfiles and checks if these exist.
+    Returns True if they exist, else returns False.
+    """
+    matchedkeyfilespaths = [phmmerpath / io.matched_keyfile_formatter(keyfile) for keyfile in keyfilepaths]
+    print(matchedkeyfilespaths)
+    if matchedkeyfilespaths[0].exists() and matchedkeyfilespaths[1].exists():
+        return True
+    else:
+        return False
+
+
 def process_phmmerhits(pathtophmmer, pdbid, minhits, maxhits, redo=False):  # TODO: refactor and break up into more functions
     """Performs post-processing of phmmer hits.
     Checks for suitable number of hits returned.
@@ -148,6 +161,10 @@ def process_phmmerhits(pathtophmmer, pdbid, minhits, maxhits, redo=False):  # TO
     print(f'OVERWRITE: {redo}\n')  # TODO: redo not yet incorporated, it does it automatically every time
 
     keyfilepaths = get_two_keyfiles(pathtophmmer, pdbid) 
+
+    if redo==False and matched_keyfiles_exist(keyfilepaths, pathtophmmer):
+        print(f'Matched keyfiles already exist!')
+        return pathtophmmer/io.matched_keyfile_formatter(keyfilepaths[0]), pathtophmmer/io.matched_keyfile_formatter(keyfilepaths[1])
 
     hits = {}
     for keyfile in keyfilepaths:
