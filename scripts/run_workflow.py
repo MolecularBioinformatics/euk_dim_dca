@@ -16,6 +16,7 @@ from run_phmmer import *
 from parse_accid_phmmerlog import *
 from process_phmmerhits import *
 from run_easel_getseqs import *
+from process_easelseqs import *
 
 
 class InputConfig():
@@ -178,17 +179,19 @@ def processeasel(icObj, redo):
         print('No easel error file found. Continuting with original matched fastas')
     else:
         try:
-            process_easelseqs(easelerrfile, icObj.matchedkeyfile1, redo)
+            orgs = process_easelseqs(easelerrfile, icObj.eslfastafile1, redo)
         except FileNotFoundError as fnotfound:
             print(fnotfound)
         except ValueError as valerr:
             print(valerr)
         try:
-            process_easelseqs(easelerrfile, icObj.matchedkeyfile2, redo)
+            orgs = process_easelseqs(easelerrfile, icObj.eslfastafile2, redo)
+            print(f'Orgs removed: {orgs}')
         except FileNotFoundError as fnotfound:
             print(fnotfound)
         except ValueError as valerr:
             print(valerr)
+    return icObj
 
 
 TASKNAMES = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel', 'processeasel'] 
