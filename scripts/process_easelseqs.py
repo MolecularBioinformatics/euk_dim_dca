@@ -13,7 +13,7 @@ Returns two fasta files
 import subprocess
 from pathlib import Path
 
-from io_utils import does_target_exist, easeled_seq_formatter
+from io_utils import does_target_exist, parse_fasta, fa_todict, writeout_fasta 
 
 
 def parse_easelerror(easelerr_filepath):
@@ -38,3 +38,23 @@ def parse_easelerror(easelerr_filepath):
                 orglist.append(line.split()[1])
     orglist = [item.split("_")[1] for item in orglist]
     return set(orglist)
+
+
+def remove_seqs_of_org(fasta_filepath, setoforgs):
+    """Removes seqs belonging to certain orgs
+    from a fasta file. Returns modified fasta file.
+
+    :param fasta_filepath: pathlib.PosixPath
+    :param setoforgs: set, organisms for which to remove seqs
+    """
+
+    if not does_target_exist(fasta_filepath, 'file'):
+        raise FileNotFoundError('Fasta file not found.')
+
+    fadict = fa_todict(fasta_filepath)
+    for key in list(fadict.keys()):
+        uniprottag = key.strip().split()[0]
+        orgtag = uniprottag.split("_")[1]
+        if orgtag in setoforgs:
+            del fadict[key]
+    return fadict
