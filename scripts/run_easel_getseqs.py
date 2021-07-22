@@ -70,13 +70,24 @@ def run_easel_iterate(easelpath, databasepath, phmmerpath, keyfilepath, redo):
         print(f'Easel-fetched Fasta file: ({outpath}) already exists in {outpath.parent}')
         return outpath
 
-    # get list of ids
+    with open(keyfilepath, 'r') as k:
+        idlist=k.readlines()
+        idlist=[item.strip() for item in idlist]
 
-    for item in idlist:
-        cmd = [f'{easelpath}/esl-sfetch',
-               f'{databasepath}',
-               f'{item}']
-        proc = subprocess.run(cmd, stdout=subprocess.PIPE)
-        if proc.returncode != 0:
-            print('bla')  # issue some warning
-        seq = proc.stdout.decode("utf-8")
+    with open(outpath, 'w+') as f:
+        for item in idlist:
+            cmd = [f'{easelpath}/esl-sfetch',
+                   f'{databasepath}',
+                   f'{item}']
+            proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)  # pipe out stderr
+            if proc.returncode != 0:
+                print(proc.stdout.decode("utf-8"))  # issue some warning
+            seq = proc.stdout.decode("utf-8")
+            f.write(seq)
+    return outpath
+
+
+def easel_clean():
+    "Cleans from fasta sequences corresponding to orgs that were not
+    found in the corresponding fasta file"""
+    pass
