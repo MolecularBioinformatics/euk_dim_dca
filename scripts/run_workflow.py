@@ -160,23 +160,45 @@ def runeasel(icObj, rerun):
     """Runs easel on a keyfile.
     Extracts sequences from a db."""
     try:
-        icObj.eslfastafile1 = run_easel(icObj.easelpath, icObj.dbpath, icObj.phmmerpath, icObj.matchedkeyfile1, rerun)
-    except Exception as e:
+        icObj.eslfastafile1 = run_easel_iterate(icObj.easelpath, icObj.dbpath, icObj.phmmerpath, icObj.matchedkeyfile1, rerun)
+    except FileNotFoundError as e:
         print(e)
     try:
-        icObj.eslfastafile2 = run_easel(icObj.easelpath, icObj.dbpath, icObj.phmmerpath, icObj.matchedkeyfile2, rerun)
-    except Exception as e:
+        icObj.eslfastafile2 = run_easel_iterate(icObj.easelpath, icObj.dbpath, icObj.phmmerpath, icObj.matchedkeyfile2, rerun)
+    except FileNotFoundError as e:
         print(e)
     return icObj
 
 
-TASKNAMES = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel'] 
+def processeasel(icObj, redo):
+    """Processes easel extracted fasta.
+    Keeps only seqs with common orgs."""
+    easelerrfile = Path(f"{icObj.phmmerpath}/{icObj.pdbid}.easelerror")
+    if not easelerrfile.is_file():
+        print('No easel error file found. Continuting with original matched fastas')
+    else:
+        try:
+            process_easelseqs(easelerrfile, icObj.matchedkeyfile1, redo)
+        except FileNotFoundError as fnotfound:
+            print(fnotfound)
+        except ValueError as valerr:
+            print(valerr)
+        try:
+            process_easelseqs(easelerrfile, icObj.matchedkeyfile2, redo)
+        except FileNotFoundError as fnotfound:
+            print(fnotfound)
+        except ValueError as valerr:
+            print(valerr)
+
+
+TASKNAMES = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel', 'processeasel'] 
 
 TASKS = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
          'runphmmer': ('2. run phmmer on refseq\n', runphmmer),
          'parsephmmer': ('3. parse phmmer into keyfile\n', parsephmmer),
          'processphmmer': ('4. process keyfile and match organisms\n', processphmmer),
-         'runeasel': ('5. runs easel extract to get seqs from db\n', runeasel)} 
+         'runeasel': ('5. runs easel extract to get seqs from db\n', runeasel),
+         'processeasel': ('6. process easel extracted seqs based on organisms\n', processeasel)} 
 
 def run_workflow(configf, pathsf, tasknamelist, redo):
     """Runs eukdimerdca workflow"""
@@ -201,7 +223,7 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser(usage="python3 %(prog)s [-h] configfile pathfile taskname [taskname, ...] --redo")
     parser.add_argument("configfile", help="path to config.txt file")
     parser.add_argument("pathfile", help="path to paths.txt file")
-    parser.add_argument("taskname", nargs = '+', help="task to run: findrefseqs, runphmmer, parsephmmer, processphmmer, runeasel")
+    parser.add_argument("taskname", nargs = '+', help="task to run: findrefseqs, runphmmer, parsephmmer, processphmmer, runeasel, processeasel")
     parser.add_argument("-r", "--redo", help="True/False to re-parse out keyfile")
     args = parser.parse_args()
 
