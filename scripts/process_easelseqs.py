@@ -70,8 +70,7 @@ def overwrite_original_fasta(fasta_filepath, newfadict):
     :param fasta_filepath: pathlib.PosixPath
     :param newfadict: dict
     """
-    with open(fasta_filepath, 'w') as f:
-        writeout_fasta(fasta_filepath, newfadict, overwrite=True)
+    writeout_fasta(fasta_filepath, newfadict, overwrite=True)
 
 
 def process_easelseqs(easelerr_filepath, fasta_filepath, redo):
@@ -89,3 +88,4 @@ def process_easelseqs(easelerr_filepath, fasta_filepath, redo):
     orgset = parse_easelerror(easelerr_filepath)
     fadict = remove_seqs_of_org(fasta_filepath, orgset)
     overwrite_original_fasta(fasta_filepath, fadict)
+    return orgset  # purely for printing purposes
