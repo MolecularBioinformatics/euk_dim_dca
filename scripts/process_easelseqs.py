@@ -46,6 +46,8 @@ def remove_seqs_of_org(fasta_filepath, setoforgs):
 
     :param fasta_filepath: pathlib.PosixPath
     :param setoforgs: set, organisms for which to remove seqs
+
+    :returns fadict: modified fasta dict
     """
 
     if not does_target_exist(fasta_filepath, 'file'):
@@ -58,3 +60,32 @@ def remove_seqs_of_org(fasta_filepath, setoforgs):
         if orgtag in setoforgs:
             del fadict[key]
     return fadict
+
+
+def overwrite_original_fasta(fasta_filepath, newfadict):
+    """Overwrites a fasta file with updated fasta dict
+    with the seqs removed that weren't extracted by easel
+    in the the other chain's fasta file
+
+    :param fasta_filepath: pathlib.PosixPath
+    :param newfadict: dict
+    """
+    with open(fasta_filepath, 'w') as f:
+        writeout_fasta(fasta_filepath, newfadict, overwrite=True)
+
+
+def process_easelseqs(easelerr_filepath, fasta_filepath, redo):
+    """Processes easel extracted sequences (fasta files)
+    based on easel-errors (where seqs were not found).
+    Finds orgs for which seqs were not extracted,
+    removes them from fasta file. Returns modified
+    fasta file.
+
+    By default, always redo.
+
+    :param fasta_filepath: pathlib.PosixPath
+    :param redo: bool"""
+
+    orgset = parse_easelerror(easelerr_filepath)
+    fadict = remove_seqs_of_org(fasta_filepath, orgset)
+    overwrite_original_fasta(fasta_filepath, fadict)
