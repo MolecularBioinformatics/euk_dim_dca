@@ -49,6 +49,20 @@ def run_easel(easelpath, databasepath, phmmerpath, keyfilepath, redo):
     return outpath
 
 
+def writeout_seqsnotfound(listoferrmessages, keyfilepath):
+    """Writes out easel error messages into a .easelerror file.
+    This is done per set of keyfiles.
+
+    :param listoferrmessages: list of stderrs, generated in run_easel_iterate 
+    :param keyfilepath: pathlib.PosixPath, keyfile input in easel
+    """
+    errorfilepath = Path(f"{keyfilepath.stem.split('_')[0]}.easelerror")
+
+    with open(errorfilepath, 'a') as errf:
+        errf.write(f'======= {keyfilepath}\n')
+        errf.write(''.join(listoferrmessages))
+
+
 def run_easel_iterate(easelpath, databasepath, phmmerpath, keyfilepath, redo):
     """Easel stops if it cannot find a sequence, no way
     to get it to continue sequence extraction.
@@ -74,20 +88,21 @@ def run_easel_iterate(easelpath, databasepath, phmmerpath, keyfilepath, redo):
         idlist=k.readlines()
         idlist=[item.strip() for item in idlist]
 
+    seqsnotfound = []
     with open(outpath, 'w+') as f:
         for item in idlist:
             cmd = [f'{easelpath}/esl-sfetch',
                    f'{databasepath}',
                    f'{item}']
-            proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)  # pipe out stderr
+            proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             if proc.returncode != 0:
-                print(proc.stdout.decode("utf-8"))  # issue some warning
+                error = proc.stdout.decode("utf-8")
+                print(error) 
+                seqsnotfound.append(error)
             seq = proc.stdout.decode("utf-8")
             f.write(seq)
+
+    if seqsnotfound:
+        writeout_seqsnotfound(seqsnotfound, keyfilepath)
+
     return outpath
-
-
-def easel_clean():
-    "Cleans from fasta sequences corresponding to orgs that were not
-    found in the corresponding fasta file"""
-    pass
