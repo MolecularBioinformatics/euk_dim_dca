@@ -163,4 +163,9 @@ def writeout_fasta(somepath, somedict, overwrite=False, addict={}):
             for k, v in addict.items():
                 f.write(''.join(['>', k, '\n']))
                 f.write(''.join([v, '\n']))
+    else:
+        with open(somepath, 'w') as f:
+            for k, v in somedict.items():
+                f.write(''.join(['>', k, '\n']))
+                f.write(''.join([v, '\n']))
     return
