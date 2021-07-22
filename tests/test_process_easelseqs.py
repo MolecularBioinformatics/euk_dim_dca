@@ -28,3 +28,15 @@ def test_parse_easelerror():
             'ORNAN', 'RHIZD', 'SARHA',
             'STRPU', 'TARSY', 'TURTR'}
     assert(parse_easelerror(eslerror) == res)
+
+def test_remove_seqs_of_org_filenotfound():
+    fastafile = Path('../testdata/2222_B_refseq_phmmer_matched.fasta')
+    dummyset = {'HUMAN', 'MOUSE'}
+    with pytest.raises(FileNotFoundError):
+        remove_seqs_of_org(fastafile, dummyset)
+
+def test_remove_seqs_of_org():
+    fastafile = Path('../testdata/1111_A_refseq_phmmer_matched.fasta')
+    dummyset = {'HUMAN', 'MOUSE'}
+    resdict = {'sp|_TOXCA BLA BLA':'ddd'}
+    assert(remove_seqs_of_org(fastafile, dummyset)==resdict)
