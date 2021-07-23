@@ -11,9 +11,23 @@ import time
 import subprocess
 from pathlib import Path
 
-from io_utils import does_target_exist 
+from io_utils import does_target_exist, fa_todict, writeout_fasta
 
-def run_muscle(fastafile_path, phmmerpath):
+
+def add_refseq(fastafile_path, refseqfile_path):
+    """Modifies fasta file with seqs by adding
+    reference sequence. 
+
+    :param fastafile_path: pathlib.PosixPath with seqs to align
+    :param refseqfile_path: pathlib.PosixPath
+    """
+    fadict = fa_todict(fastafile_path)
+    refseqdict = fa_todict(refseqfile_path)
+
+    writeout_fasta(fastafile_path, fadict, overwrite=True, addict=refseqdict)
+
+
+def run_muscle(fastafile_path, refseqfile_path, phmmerpath):
     """
     Spawns subprocess to run muscle.
 
@@ -26,6 +40,8 @@ def run_muscle(fastafile_path, phmmerpath):
         raise FileNotFoundError(f'Fasta file with seqs to align not found: {fastafile_path}.')
     elif fastafile_path.stat().st_size == 0:
         raise ValueError(f'EMPTY FILE: {fastafile_path}.')
+
+    add_refseq(fastafile_path, refseqfile_path)
     
     outpath = phmmerpath / Path(f'{fastafile_path.stem}.aln')
     cmdargs = ["muscle", 
