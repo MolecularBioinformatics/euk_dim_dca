@@ -17,7 +17,7 @@ from parse_accid_phmmerlog import *
 from process_phmmerhits import *
 from run_easel_getseqs import *
 from process_easelseqs import *
-
+from align_seqs import *
 
 class InputConfig():
     """Object to store names of intermediate files.
@@ -103,7 +103,7 @@ def findrefseqs(icObject, redo):
         return icObject
 
 
-def runphmmer(icObj, rerun):  # test on actually running phmmer
+def runphmmer(icObj, rerun): 
     """Runs phmmer on seq.
     Takes and returns an InputConfigObj."""
     try:
@@ -193,15 +193,32 @@ def processeasel(icObj, redo):
             print(valerr)
     return icObj
 
+def alignseqs(icObj, realign):
+    """Runs muscle to align sequences.
+    Takes and returns an InputConfigObj."""
+    try:
+        icObj.alnfile1 = run_muscle(icObj.eslfastafile1, icObj.refseq1, icObj.phmmerpath, realign)
+    except FileNotFoundError as fnotfound:
+        print(fnotfound)
+    except ValueError as valerr:
+        print(valerr)
+    try:
+        icObj.alnfile2 = run_muscle(icObj.eslfastafile2, icObj.refseq2, icObj.phmmerpath, realign)
+    except FileNotFoundError as fnotfound:
+        print(fnotfound)
+    except ValueError as valerr:
+        print(valerr)
 
-TASKNAMES = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel', 'processeasel'] 
+
+TASKNAMES = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel', 'processeasel', 'alignseqs'] 
 
 TASKS = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
          'runphmmer': ('2. run phmmer on refseq\n', runphmmer),
          'parsephmmer': ('3. parse phmmer into keyfile\n', parsephmmer),
          'processphmmer': ('4. process keyfile and match organisms\n', processphmmer),
          'runeasel': ('5. runs easel extract to get seqs from db\n', runeasel),
-         'processeasel': ('6. process easel extracted seqs based on organisms\n', processeasel)} 
+         'processeasel': ('6. process easel extracted seqs based on organisms\n', processeasel)
+         'alignseqs': ('7. aligns sequences with muscle\n', alignseqs)} 
 
 def run_workflow(configf, pathsf, tasknamelist, redo):
     """Runs eukdimerdca workflow"""
