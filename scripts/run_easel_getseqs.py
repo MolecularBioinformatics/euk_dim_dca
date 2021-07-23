@@ -94,9 +94,9 @@ def run_easel_iterate(easelpath, databasepath, phmmerpath, keyfilepath, redo):
             cmd = [f'{easelpath}/esl-sfetch',
                    f'{databasepath}',
                    f'{item}']
-            proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             if proc.returncode != 0:
-                error = proc.stdout.decode("utf-8")
+                error = proc.stderr.decode("utf-8")
                 print(error) 
                 seqsnotfound.append(error)
             seq = proc.stdout.decode("utf-8")
