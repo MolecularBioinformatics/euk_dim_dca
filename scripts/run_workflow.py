@@ -209,6 +209,7 @@ def alignseqs(icObj, realign):
     except ValueError as valerr:
         print(valerr)
 
+    return icObj
 
 TASKNAMES = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel', 'processeasel', 'alignseqs'] 
 
@@ -217,7 +218,7 @@ TASKS = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
          'parsephmmer': ('3. parse phmmer into keyfile\n', parsephmmer),
          'processphmmer': ('4. process keyfile and match organisms\n', processphmmer),
          'runeasel': ('5. runs easel extract to get seqs from db\n', runeasel),
-         'processeasel': ('6. process easel extracted seqs based on organisms\n', processeasel)
+         'processeasel': ('6. process easel extracted seqs based on organisms\n', processeasel),
          'alignseqs': ('7. aligns sequences with muscle\n', alignseqs)} 
 
 def run_workflow(configf, pathsf, tasknamelist, redo):
