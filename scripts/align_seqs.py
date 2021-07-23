@@ -44,6 +44,7 @@ def run_muscle(fastafile_path, refseqfile_path, phmmerpath, redo):
         raise ValueError(f'EMPTY FILE: {fastafile_path}.')
     elif does_target_exist(outpath, 'file') and redo==False:
         print(f'Alignment file {outpath} already exists. Give --redo True to realign.')
+        return outpath
 
     add_refseq(fastafile_path, refseqfile_path)
     
