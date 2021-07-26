@@ -10,6 +10,9 @@ sys.path.append("../scripts")
 
 from align_seqs import *
 
+def test_add_refseq():
+    pass  # how to test i/o streams?
+
 def test_run_muscle_fnotfound():
     fafilepath = Path('../testdata/2222_A_refseq_phmmer_matched.fasta')
     refseqpath = Path('../testdata/2222_A_refseq.fasta')
