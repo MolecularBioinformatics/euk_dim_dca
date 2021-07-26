@@ -23,8 +23,10 @@ def add_refseq(fastafile_path, refseqfile_path):
     """
     fadict = fa_todict(fastafile_path)
     refseqdict = fa_todict(refseqfile_path)
+    newtag = f'rfseq|{refseqfile_path.stem}|_RFSEQ {next(iter(refseqdict))}'
+    newrefseqdict = {newtag:refseqdict[next(iter(refseqdict))]}
 
-    writeout_fasta(fastafile_path, fadict, overwrite=True, addict=refseqdict)
+    writeout_fasta(fastafile_path, fadict, overwrite=True, addict=newrefseqdict)
 
 
 def run_muscle(fastafile_path, refseqfile_path, phmmerpath, redo):
