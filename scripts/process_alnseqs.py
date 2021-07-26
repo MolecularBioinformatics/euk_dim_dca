@@ -23,8 +23,9 @@ def get_orgdict_from_fafile(fafilepath):
     fadict = fa_todict(fafilepath)
     fa_orgdict = {}
     for header in fadict.keys():
-        orgtag = header.strip().split("_")
-        fa_orgdict[orgtag] = (header, fa_orgdict[header])
+        firstpart = header.strip().split()[0]
+        orgtag = firstpart.split("_")[-1:][0]
+        fa_orgdict[orgtag] = (header, fadict[header])
     return fa_orgdict
 
 
