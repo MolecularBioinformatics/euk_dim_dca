@@ -24,9 +24,9 @@ def test_join_two_orgdicts():
     orgdict1 = get_orgdict_from_fafile(fafilepath1)
     fafilepath2 = Path('../testdata/1111_S_refseq_phmmer_matched.fasta')
     orgdict2 = get_orgdict_from_fafile(fafilepath2)
-    correctdict = {'tr|_HUMAN SOME OTHER USELESS STUFF|tr|_HUMAN SOME OTHER USELESS STUFF':'abcabc',
-                   'sp|_TOXCA BLA BLA|sp|_TOXCA BLA BLA':'defdef',
-                   'rfseq|1c0f_A_refseq|_RFSEQ XP_636088.1|rfseq|1c0f_A_refseq|_RFSEQ XP_636088.1':'ghighi'}
+    correctdict = {'tr|_HUMAN SOME OTHER USELESS STUFF||tr|_HUMAN SOME OTHER USELESS STUFF':'abcabc',
+                   'sp|_TOXCA BLA BLA||sp|_TOXCA BLA BLA':'defdef',
+                   'rfseq|1c0f_A_refseq|_RFSEQ XP_636088.1||rfseq|1c0f_A_refseq|_RFSEQ XP_636088.1':'ghighi'}
     assert(join_two_orgdicts(orgdict1, orgdict2)==correctdict)
     
 
@@ -46,7 +46,7 @@ def test_process_alnseqs_fnotfound():
         process_alnseqs(alnfilepath1, alnfilepath2, Path('../testdata'), False)
 
 def test_process_alnseqs_noredo():
-    pass
-
-def test_process_alnseqs():
-    pass
+    alnfilepath1 = Path('../testdata/1c0f_A_refseq_phmmer_matched.aln')
+    alnfilepath2 = Path('../testdata/1c0f_S_refseq_phmmer_matched.aln')
+    res = Path('../testdata/Joint_1c0f_A_1c0f_S_aln.fasta')
+    assert(process_alnseqs(alnfilepath1, alnfilepath2, Path('../testdata'), False)==res) 
