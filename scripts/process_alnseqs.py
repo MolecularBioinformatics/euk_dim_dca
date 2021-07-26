@@ -77,4 +77,6 @@ def process_alnseqs(alnfile1_path, alnfile2_path, phmmerpath, redo):
     jointdict = join_two_orgdicts(orgdict1, orgdict2)
 
     writeout_fasta(outpath, jointdict)
+    print(f'Joint alignment written into: {outpath}')
+
     return outpath
