@@ -18,6 +18,7 @@ from process_phmmerhits import *
 from run_easel_getseqs import *
 from process_easelseqs import *
 from align_seqs import *
+from process_alnseqs import *
 
 class InputConfig():
     """Object to store names of intermediate files.
@@ -208,10 +209,22 @@ def alignseqs(icObj, realign):
         print(fnotfound)
     except ValueError as valerr:
         print(valerr)
+    return icObj
+
+def processalignment(icObj, redo):
+    """Matches aligned sequences by organism.
+    Joins (horizontally concatenates) matched sequences
+    to make a joint alignment file for DCA"""
+    try:
+        icObj.jointalnfile = process_alnseqs(icObj.alnfile1, icObj.alnfile2, icObj.phmmerpath, redo)
+    except FileNotFoundError as fnotfound:
+        print(fnotfound)
+    except ValueError as valerr:
+        print(valerr)
 
     return icObj
 
-TASKNAMES = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel', 'processeasel', 'alignseqs'] 
+TASKNAMES = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel', 'processeasel', 'alignseqs', 'processalignment'] 
 
 TASKS = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
          'runphmmer': ('2. run phmmer on refseq\n', runphmmer),
@@ -219,7 +232,8 @@ TASKS = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
          'processphmmer': ('4. process keyfile and match organisms\n', processphmmer),
          'runeasel': ('5. runs easel extract to get seqs from db\n', runeasel),
          'processeasel': ('6. process easel extracted seqs based on organisms\n', processeasel),
-         'alignseqs': ('7. aligns sequences with muscle\n', alignseqs)} 
+         'alignseqs': ('7. aligns sequences with muscle\n', alignseqs),
+         'processalignment': ('8. matches and joins aligned sequences\n', processalignment)} 
 
 def run_workflow(configf, pathsf, tasknamelist, redo):
     """Runs eukdimerdca workflow"""
@@ -244,7 +258,7 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser(usage="python3 %(prog)s [-h] configfile pathfile taskname [taskname, ...] --redo")
     parser.add_argument("configfile", help="path to config.txt file")
     parser.add_argument("pathfile", help="path to paths.txt file")
-    parser.add_argument("taskname", nargs = '+', help="task to run: findrefseqs, runphmmer, parsephmmer, processphmmer, runeasel, processeasel, alignseqs")
+    parser.add_argument("taskname", nargs = '+', help="task to run: findrefseqs, runphmmer, parsephmmer, processphmmer, runeasel, processeasel, alignseqs, processalignment")
     parser.add_argument("-r", "--redo", help="True/False to re-parse out keyfile")
     args = parser.parse_args()
 
