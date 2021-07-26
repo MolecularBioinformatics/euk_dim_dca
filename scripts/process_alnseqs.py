@@ -46,7 +46,7 @@ def join_two_orgdicts(orgdict1, orgdict2):
         header2 = orgdict2[orgtag][0]
         seq1 = orgdict1[orgtag][1]
         seq2 = orgdict2[orgtag][1]
-        dcadict[header1+'|'+header2] = seq1+seq2
+        dcadict[header1+'||'+header2] = seq1+seq2
     return dcadict
 
 
@@ -61,8 +61,8 @@ def process_alnseqs(alnfile1_path, alnfile2_path, phmmerpath, redo):
 
     :returns jointalnfile_path: pathlib.PosixPath"""
 
-    ch1 = alnfile1_path.stem.split('refseq')[0]
-    ch2 = alnfile2_path.stem.split('refseq')[0]
+    ch1 = alnfile1_path.stem.split('_refseq')[0]
+    ch2 = alnfile2_path.stem.split('_refseq')[0]
     outpath = phmmerpath / f"Joint_{ch1}_{ch2}_aln.fasta"
 
     if not (does_target_exist(alnfile1_path, 'file') and does_target_exist(alnfile2_path, 'file')):
