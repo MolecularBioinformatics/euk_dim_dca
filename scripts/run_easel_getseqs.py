@@ -105,4 +105,6 @@ def run_easel_iterate(easelpath, databasepath, phmmerpath, keyfilepath, redo):
     if seqsnotfound:
         writeout_seqsnotfound(seqsnotfound, keyfilepath)
 
+    print(f'Fasta file with sequences written: {outpath}')
+
     return outpath
