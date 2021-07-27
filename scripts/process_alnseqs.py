@@ -11,6 +11,25 @@ Prepares an alignment for DCA.
 from pathlib import Path
 
 from io_utils import does_target_exist, parse_fasta, fa_todict, writeout_fasta
+from pydca import msa_trimmer
+
+
+def trim_msa_by_refseq(aln_path, refseqpath):
+    """Trims an alignment based on the reference
+    sequence. Writes out trimmed alignment to file.
+
+    :param aln_path: pathlib.PosixPath
+    :param refseqpath: pathlib.PosixPath"""
+    
+    trim_outpath = Path(f"{aln_path.stem}_trimmed.fasta")
+
+    trimmer = msa_trimmer.msa_trimmer.MSAtrimmer(aln_path, 
+                                                 biomolecule='protein',
+                                                 refseq_file=refseqpath)
+
+    trim_data = trimmer.get_msa_trimmed_by_refseq(remove_all_gaps=True)
+
+    return trim_data
 
 
 def get_orgdict_from_fafile(fafilepath):
