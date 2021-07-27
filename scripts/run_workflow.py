@@ -151,7 +151,7 @@ def processphmmer(icObj, overwrite):
     maxhits = 600
 
     try:
-        icObj.matchedkeyfile1, icObj.matchedkeyfile2 = process_phmmerhits(icObj.phmmerpath, icObj.pdbid, minhits, maxhits, overwrite)
+        icObj.matchedkeyfile1, icObj.matchedkeyfile2 = process_phmmerhits(icObj.phmmerpath, icObj.keyfile1, icObj.keyfile2, minhits, maxhits, overwrite)
     except ValueError as valerr: 
         raise ValueError('Unable to process keyfiles.') from valerr
     finally:

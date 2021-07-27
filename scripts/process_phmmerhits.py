@@ -26,7 +26,7 @@ import io_utils as io
 from ordered_set import OrderedSet 
 
 
-def get_two_keyfiles(pathtophmmer, pdbid):
+def get_two_keyfiles_old(pathtophmmer, pdbid):
     """Checks dir for exactly 2 phmmer keyfiles for pdbid.
     Returns list of these two keyfiles if found.
 
@@ -42,6 +42,26 @@ def get_two_keyfiles(pathtophmmer, pdbid):
     if len(keyfiles) != 2:
         raise ValueError(f'Number of keyfiles {len(keyfiles)} not equal to 2:\n{keyfiles}') 
     return keyfiles
+
+
+def get_two_keyfiles(pathtophmmer, keyfile1_path, keyfile2_path):
+    """Returns list of two keyfiles if both exist
+    in dir indicated by pathtophmmer
+
+    :param pathtophmmer: pathlib.PosixPath
+    :param keyfile1: pathlib.PosixPath
+    :param keyfile2: pathlib.PosixPath
+
+    :returns keyfiles: list of pathlib.PosixPaths
+    """
+    firstfile = io.does_target_exist(keyfile1_path, 'file')
+    secondfile = io.does_target_exist(keyfile2_path, 'file')
+
+    if not firstfile:
+        raise FileNotFoundError(f'KEYFILE MISSING: {keyfile1_path}')
+    if not secondfile:
+        raise FileNotFoundError(f'KEYFILE MISSING: {keyfile2_path}')
+    return [keyfile1_path, keyfile2_path]
 
 
 def get_hit_list(pathtokeyfile, hitthresh, relation):
@@ -136,14 +156,14 @@ def matched_keyfiles_exist(keyfilepaths, phmmerpath):
     Returns True if they exist, else returns False.
     """
     matchedkeyfilespaths = [phmmerpath / io.matched_keyfile_formatter(keyfile) for keyfile in keyfilepaths]
-    print(matchedkeyfilespaths)
+    print(f'Matched keyfiles: {matchedkeyfilespaths}')
     if matchedkeyfilespaths[0].exists() and matchedkeyfilespaths[1].exists():
         return True
     else:
         return False
 
 
-def process_phmmerhits(pathtophmmer, pdbid, minhits, maxhits, redo=False):  # TODO: refactor and break up into more functions
+def process_phmmerhits(pathtophmmer, keyfile1path, keyfile2path, minhits, maxhits, redo=False):  # TODO: refactor and break up into more functions
     """Performs post-processing of phmmer hits.
     Checks for suitable number of hits returned.
     Matches organisms for the hits and returns
@@ -160,9 +180,9 @@ def process_phmmerhits(pathtophmmer, pdbid, minhits, maxhits, redo=False):  # TO
     print(f'MAXHITS: {maxhits}')
     print(f'OVERWRITE: {redo}\n')  # TODO: redo not yet incorporated, it does it automatically every time
 
-    keyfilepaths = get_two_keyfiles(pathtophmmer, pdbid) 
+    keyfilepaths = get_two_keyfiles(pathtophmmer, keyfile1path, keyfile2path)
 
-    if redo==False and matched_keyfiles_exist(keyfilepaths, pathtophmmer):
+    if redo==False and matched_keyfiles_exist(keyfilepaths, pathtophmmer)==True:
         print(f'Matched keyfiles already exist!')
         return pathtophmmer/io.matched_keyfile_formatter(keyfilepaths[0]), pathtophmmer/io.matched_keyfile_formatter(keyfilepaths[1])
 
@@ -179,14 +199,13 @@ def process_phmmerhits(pathtophmmer, pdbid, minhits, maxhits, redo=False):  # TO
     masterorgset = match_orgtags(*orgsets)
 
     if len(masterorgset) >= maxhits: 
-        print(f'ATTENTION: Number of seqs for {pdbid} {len(masterorgset)} exceeded limit of {maxhits}!')
+        print(f'ATTENTION: Number of seqs {len(masterorgset)} exceeded limit of {maxhits}!')
         print(f'           Matched keyfiles are reduced to {maxhits} sequences.')
         masterlist = list(masterorgset)
         masterorgset = OrderedSet(masterlist[0:maxhits])
 
     for keyfile, entry in hits.items(): 
         hits[keyfile] = select_seqheader_from_org(masterorgset, entry[1])
-
     
     keylist = []
     for keyfile in hits.keys():
