@@ -216,7 +216,7 @@ def processalignment(icObj, redo):
     Joins (horizontally concatenates) matched sequences
     to make a joint alignment file for DCA"""
     try:
-        icObj.jointalnfile = process_alnseqs(icObj.alnfile1, icObj.alnfile2, icObj.phmmerpath, redo)
+        icObj.jointalnfile = process_alnseqs(icObj.alnfile1, icObj.alnfile2, icObj.refseq1, icObj.refseq2, icObj.phmmerpath, redo)
     except FileNotFoundError as fnotfound:
         print(fnotfound)
     except ValueError as valerr:
