@@ -14,6 +14,31 @@ from io_utils import does_target_exist, parse_fasta, fa_todict, writeout_fasta
 from pydca.msa_trimmer import msa_trimmer
 
 
+def move_refseq_up(aln_path):
+    """Moves reference sequence up to first
+    sequence in an alignment file. This is done
+    to force pydca's trim-by-refseq to choose
+    the correct seq as the reference (in case multiple
+    copies of the refseq exist in the alignment file)
+
+    Searches for RFSEQ tag. Prints out another fasta
+    file with RFSEQ first.
+
+    :param aln_path: pathlib.PosixPath"""
+    faorgdict = get_orgdict_from_fafile(aln_path)
+
+    refseq_entry = faorgdict['RFSEQ']  # tuple of ('header', 'seq')
+    fadict = {}
+    fadict[refseq_entry[0]] = refseq_entry[1]
+
+    for org in faorgdict.keys():
+        if org != 'RFSEQ':
+            entry = faorgdict[org]
+            fadict[entry[0]]=entry[1]
+
+    writeout_fasta(aln_path, fadict, overwrite=True)
+
+
 def trim_msa_by_refseq(aln_path, refseqpath):
     """Trims an alignment based on the reference
     sequence. Writes out trimmed alignment to file.
@@ -62,7 +87,6 @@ def get_orgdict_from_fadict(fadict):
 
 def get_orgdict_from_fafile(fafilepath):
     """
-    ** currently not used **
     Takes in fasta file (with uniprot-style headers),
     returns a dict of format {'ORG':('header', 'seq'),...}
 
