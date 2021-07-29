@@ -11,7 +11,7 @@ Prepares an alignment for DCA.
 from pathlib import Path
 
 from io_utils import does_target_exist, parse_fasta, fa_todict, writeout_fasta
-from pydca import msa_trimmer
+from pydca.msa_trimmer import msa_trimmer
 
 
 def trim_msa_by_refseq(aln_path, refseqpath):
@@ -23,13 +23,24 @@ def trim_msa_by_refseq(aln_path, refseqpath):
     
     trim_outpath = Path(f"{aln_path.stem}_trimmed.fasta")
 
-    trimmer = msa_trimmer.msa_trimmer.MSAtrimmer(aln_path, 
-                                                 biomolecule='protein',
-                                                 refseq_file=refseqpath)
+    trimmer = msa_trimmer.MSATrimmer(aln_path, 
+                                     biomolecule='protein',
+                                     refseq_file=refseqpath)
 
     trim_data = trimmer.get_msa_trimmed_by_refseq(remove_all_gaps=True)
 
     return trim_data
+
+
+def trim_list_to_fadict(trimlist):
+    """Converts a list of tuples [('header','seq'), ...] to
+    a dictionary of {'header':'seq', ... }.
+
+    :param trimlist: list, from pydca's trimmer"""
+    fadict = {}
+    for pair in trimlist:
+        fadict[pair[0]] = pair[1]
+    return fadict
 
 
 def get_orgdict_from_fafile(fafilepath):
