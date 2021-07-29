@@ -43,8 +43,27 @@ def trim_list_to_fadict(trimlist):
     return fadict
 
 
+def get_orgdict_from_fadict(fadict):
+    """Takes in a fasta dict of form 
+    {'header':'seq', ... }.
+    Returns a dict of format {'ORG':('header','seq'),...}
+
+    :param fastadict: dict
+
+    :returns: dict"""
+
+    fa_orgdict = {}
+    for header in fadict.keys():
+        firstpart = header.strip().split()[0]
+        orgtag = firstpart.split("_")[-1:][0]
+        fa_orgdict[orgtag] = (header, fadict[header])
+    return fa_orgdict
+
+
 def get_orgdict_from_fafile(fafilepath):
-    """Takes in fasta file (with uniprot-style headers),
+    """
+    ** currently not used **
+    Takes in fasta file (with uniprot-style headers),
     returns a dict of format {'ORG':('header', 'seq'),...}
 
     :param fafilepath: pathlib.PosixPath
@@ -80,7 +99,7 @@ def join_two_orgdicts(orgdict1, orgdict2):
     return dcadict
 
 
-def process_alnseqs(alnfile1_path, alnfile2_path, phmmerpath, redo):
+def process_alnseqs(alnfile1_path, alnfile2_path, refseq1_path, refseq2_path, phmmerpath, redo):
     """Prepares aligned sequences from two alignment files for 
     DCA. First matches the sequences based on organism, then 
     zips them up (joins) them into one joint alignment file.
@@ -101,8 +120,14 @@ def process_alnseqs(alnfile1_path, alnfile2_path, phmmerpath, redo):
         print(f'Joint alignment already exists: {outpath}')
         return outpath
 
-    orgdict1 = get_orgdict_from_fafile(alnfile1_path)
-    orgdict2 = get_orgdict_from_fafile(alnfile2_path)
+    trim1list = trim_msa_by_refseq(alnfile1_path, refseq1_path)
+    trim2list = trim_msa_by_refseq(alnfile2_path, refseq2_path)
+
+    fadict1 = trim_list_to_fadict(trim1list)
+    fadict2 = trim_list_to_fadict(trim2list)
+
+    orgdict1 = get_orgdict_from_fadict(fadict1)
+    orgdict2 = get_orgdict_from_fadict(fadict2)
 
     jointdict = join_two_orgdicts(orgdict1, orgdict2)
 
