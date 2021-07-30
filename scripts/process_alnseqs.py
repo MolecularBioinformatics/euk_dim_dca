@@ -27,7 +27,7 @@ def move_refseq_up(aln_path):
     :param aln_path: pathlib.PosixPath"""
     faorgdict = get_orgdict_from_fafile(aln_path)
 
-    refseq_entry = faorgdict['RFSEQ']  # tuple of ('header', 'seq')
+    refseq_entry = faorgdict['RFSEQ'] 
     fadict = {}
     fadict[refseq_entry[0]] = refseq_entry[1]
 
@@ -143,6 +143,9 @@ def process_alnseqs(alnfile1_path, alnfile2_path, refseq1_path, refseq2_path, ph
     if redo == False and does_target_exist(outpath, 'file'):
         print(f'Joint alignment already exists: {outpath}')
         return outpath
+
+    move_refseq_up(alnfile1_path)
+    move_refseq_up(alnfile2_path)
 
     trim1list = trim_msa_by_refseq(alnfile1_path, refseq1_path)
     trim2list = trim_msa_by_refseq(alnfile2_path, refseq2_path)
