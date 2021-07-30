@@ -147,7 +147,9 @@ def process_alnseqs(alnfile1_path, alnfile2_path, refseq1_path, refseq2_path, ph
     move_refseq_up(alnfile1_path)
     move_refseq_up(alnfile2_path)
 
+    print(f'trimming msa 1 ...')
     trim1list = trim_msa_by_refseq(alnfile1_path, refseq1_path)
+    print(f'trimming msa 2 ...')
     trim2list = trim_msa_by_refseq(alnfile2_path, refseq2_path)
 
     fadict1 = trim_list_to_fadict(trim1list)
@@ -156,6 +158,7 @@ def process_alnseqs(alnfile1_path, alnfile2_path, refseq1_path, refseq2_path, ph
     orgdict1 = get_orgdict_from_fadict(fadict1)
     orgdict2 = get_orgdict_from_fadict(fadict2)
 
+    print(f'joining trimmed msas...')
     jointdict = join_two_orgdicts(orgdict1, orgdict2)
 
     writeout_fasta(outpath, jointdict, overwrite=True)
