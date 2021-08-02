@@ -19,6 +19,7 @@ from run_easel_getseqs import *
 from process_easelseqs import *
 from align_seqs import *
 from process_alnseqs import *
+from run_dca import *
 
 class InputConfig():
     """Object to store names of intermediate files.
@@ -194,6 +195,7 @@ def processeasel(icObj, redo):
             print(valerr)
     return icObj
 
+
 def alignseqs(icObj, realign):
     """Runs muscle to align sequences.
     Takes and returns an InputConfigObj."""
@@ -211,6 +213,7 @@ def alignseqs(icObj, realign):
         print(valerr)
     return icObj
 
+
 def processalignment(icObj, redo):
     """Matches aligned sequences by organism.
     Joins (horizontally concatenates) matched sequences
@@ -224,7 +227,20 @@ def processalignment(icObj, redo):
 
     return icObj
 
-TASKNAMES = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel', 'processeasel', 'alignseqs', 'processalignment'] 
+
+def rundca(icObj, redo):
+    """Runs dca on a joint alignment.
+    Deposits scores into a scores.dat file."""
+    try:
+        icObj.mfdcaoutfile = run_dca(icObj.jointalnfile, icObj.phmmerpath, redo)
+    except FileNotFoundError as fnotfound:
+        print(fnotfound)
+    except ValueError as valerr:
+        print(valerr)
+    return icObj
+
+
+TASKNAMES = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel', 'processeasel', 'alignseqs', 'processalignment', 'rundca'] 
 
 TASKS = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
          'runphmmer': ('2. run phmmer on refseq\n', runphmmer),
@@ -233,7 +249,8 @@ TASKS = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
          'runeasel': ('5. runs easel extract to get seqs from db\n', runeasel),
          'processeasel': ('6. process easel extracted seqs based on organisms\n', processeasel),
          'alignseqs': ('7. aligns sequences with muscle\n', alignseqs),
-         'processalignment': ('8. matches and joins aligned sequences\n', processalignment)} 
+         'processalignment': ('8. matches and joins aligned sequences\n', processalignment),
+         'rundca': ('9. runs DCA on joint aligned sequences\n', rundca)} 
 
 def run_workflow(configf, pathsf, tasknamelist, redo):
     """Runs eukdimerdca workflow"""
@@ -258,7 +275,7 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser(usage="python3 %(prog)s [-h] configfile pathfile taskname [taskname, ...] --redo")
     parser.add_argument("configfile", help="path to config.txt file")
     parser.add_argument("pathfile", help="path to paths.txt file")
-    parser.add_argument("taskname", nargs = '+', help="task to run: findrefseqs, runphmmer, parsephmmer, processphmmer, runeasel, processeasel, alignseqs, processalignment")
+    parser.add_argument("taskname", nargs = '+', help="task to run: findrefseqs, runphmmer, parsephmmer, processphmmer, runeasel, processeasel, alignseqs, processalignment, rundca")
     parser.add_argument("-r", "--redo", help="True/False to re-parse out keyfile")
     args = parser.parse_args()
 
