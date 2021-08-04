@@ -260,6 +260,9 @@ def run_workflow(configf, pathsf, tasknamelist, redo):
     except IOError:
         ic = None
 
+    if 'all' in tasknamelist:
+        tasknamelist = TASKNAMES[1:]
+
     for taskname in tasknamelist: 
         if taskname not in TASKNAMES:
             raise ValueError(f'{taskname} not a valid task. Try again.')
@@ -291,10 +294,7 @@ if __name__=="__main__":
         redoflag = True
 
     if isinstance(args.taskname, str):
-        singletask = [args.taskname]
-        run_workflow(configfile, pathfile, singletask, redoflag)
-    elif isinstance(args.taskname, list):
-        tasklist = args.taskname
-        run_workflow(configfile, pathfile, tasklist, redoflag)
+        tasklist = [args.taskname]
     else:
-        raise ValueError('Invalid input.')
+        tasklist = args.taskname
+    run_workflow(configfile, pathfile, tasklist, redoflag)
