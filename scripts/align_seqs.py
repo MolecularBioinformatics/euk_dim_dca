@@ -29,16 +29,16 @@ def add_refseq(fastafile_path, refseqfile_path):
     writeout_fasta(fastafile_path, fadict, overwrite=True, addict=newrefseqdict)
 
 
-def run_muscle(fastafile_path, refseqfile_path, phmmerpath, redo):
+def run_muscle(fastafile_path, refseqfile_path, alignmentspath, redo):
     """
     Spawns subprocess to run muscle.
 
     :param fastafile_path: pathlib.PosixPath
-    :param phmmerpath: pathlib.PosixPath
+    :param alignmentspath: pathlib.PosixPath
 
     :returns alnfile_path: pathlib.PosixPath, aligned fasta
     """
-    outpath = phmmerpath / Path(f'{fastafile_path.stem}.aln')
+    outpath = alignmentspath / Path(f'{fastafile_path.stem}.aln')
 
     if not does_target_exist(fastafile_path, 'file'):
         raise FileNotFoundError(f'Fasta file with seqs to align not found: {fastafile_path}.')
