@@ -204,13 +204,13 @@ def alignseqs(icObj, realign):
     """Runs muscle to align sequences.
     Takes and returns an InputConfigObj."""
     try:
-        icObj.alnfile1 = run_muscle(icObj.eslfastafile1, icObj.refseq1, icObj.phmmerpath, realign)
+        icObj.alnfile1 = run_muscle(icObj.eslfastafile1, icObj.refseq1, icObj.alnpath, realign)
     except FileNotFoundError as fnotfound:
         print(fnotfound)
     except ValueError as valerr:
         print(valerr)
     try:
-        icObj.alnfile2 = run_muscle(icObj.eslfastafile2, icObj.refseq2, icObj.phmmerpath, realign)
+        icObj.alnfile2 = run_muscle(icObj.eslfastafile2, icObj.refseq2, icObj.alnpath, realign)
     except FileNotFoundError as fnotfound:
         print(fnotfound)
     except ValueError as valerr:
@@ -223,7 +223,7 @@ def processalignment(icObj, redo):
     Joins (horizontally concatenates) matched sequences
     to make a joint alignment file for DCA"""
     try:
-        icObj.jointalnfile = process_alnseqs(icObj.alnfile1, icObj.alnfile2, icObj.refseq1, icObj.refseq2, icObj.phmmerpath, redo)
+        icObj.jointalnfile = process_alnseqs(icObj.alnfile1, icObj.alnfile2, icObj.refseq1, icObj.refseq2, icObj.alnpath, redo)
     except FileNotFoundError as fnotfound:
         print(fnotfound)
     except ValueError as valerr:
