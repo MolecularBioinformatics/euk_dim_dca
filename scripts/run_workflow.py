@@ -236,7 +236,7 @@ def rundca(icObj, redo):
     """Runs dca on a joint alignment.
     Deposits scores into a scores.dat file."""
     try:
-        icObj.mfdcaoutfile = run_dca(icObj.jointalnfile, icObj.phmmerpath, redo)
+        icObj.mfdcaoutfile = run_dca(icObj.jointalnfile, icObj.dcapath, redo)
     except FileNotFoundError as fnotfound:
         print(fnotfound)
     except ValueError as valerr:
