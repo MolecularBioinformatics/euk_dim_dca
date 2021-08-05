@@ -133,13 +133,13 @@ def parsephmmer(icObj, overwrite):
     Takes and returns and InputConfigObj.
     Overwrite is a bool."""
     try:
-        icObj.keyfile1 = parse_accid_phmmerlog(icObj.logfile1, icObj.phmmerpath, overwrite)
+        icObj.keyfile1 = parse_accid_phmmerlog(icObj.logfile1, icObj.keyfilepath, overwrite)
     except FileNotFoundError as fnotfound:
         print(fnotfound)
     except ValueError as fileempty:
         print(filempty)
     try:
-        icObj.keyfile2 = parse_accid_phmmerlog(icObj.logfile2, icObj.phmmerpath, overwrite)
+        icObj.keyfile2 = parse_accid_phmmerlog(icObj.logfile2, icObj.keyfilepath, overwrite)
     except FileNotFoundError as fnotfound:
         print(fnotfound)
     except ValueError as fileempty:
@@ -156,7 +156,7 @@ def processphmmer(icObj, overwrite):
     maxhits = 600
 
     try:
-        icObj.matchedkeyfile1, icObj.matchedkeyfile2 = process_phmmerhits(icObj.phmmerpath, icObj.keyfile1, icObj.keyfile2, minhits, maxhits, overwrite)
+        icObj.matchedkeyfile1, icObj.matchedkeyfile2 = process_phmmerhits(icObj.keyfilepath, icObj.keyfile1, icObj.keyfile2, minhits, maxhits, overwrite)
     except ValueError as valerr: 
         raise ValueError('Unable to process keyfiles.') from valerr
     finally:
