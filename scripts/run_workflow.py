@@ -28,10 +28,16 @@ class InputConfig():
     def __init__(self, config, paths):
         """Initiates the class"""
 
-        self.fastapath = ''
+        # input paths
         self.dbpath = ''
-        self.phmmerpath = ''
         self.easelpath = ''
+
+        # output paths
+        self.fastapath = ''
+        self.phmmerpath = ''
+        self.keyfilepath = ''
+        self.alnpath = ''
+        self.dcapath = ''
 
         self._read_paths(paths)
 
@@ -57,12 +63,10 @@ class InputConfig():
     def _read_paths(self, paths):
         """Reads paths from paths.txt"""
         with open(paths, 'r') as p:
-            paths = p.readlines()
-            paths = [Path(path.strip()) for path in paths]
-        self.fastapath = paths[0]
-        self.dbpath = paths[1]
-        self.phmmerpath = paths[2] 
-        self.easelpath = paths[3]
+            for line in p.readlines():
+                path = line.strip().split('=')
+                if path[0] in self.__dict__.keys():
+                    self.__dict__[path[0]] = Path(path[1])
 
     def _read_inputs(self, config):
         """Reads file inputs from config.txt"""
