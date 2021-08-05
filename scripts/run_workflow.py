@@ -180,7 +180,7 @@ def runeasel(icObj, rerun):
 def processeasel(icObj, redo):
     """Processes easel extracted fasta.
     Keeps only seqs with common orgs."""
-    easelerrfile = Path(f"{icObj.phmmerpath}/{icObj.pdbid}.easelerror")
+    easelerrfile = Path(f"{icObj.fastapath}/{icObj.pdbid}.easelerror")
     if not easelerrfile.is_file():
         print('No easel error file found. Continuting with original matched fastas')
     else:
@@ -258,7 +258,6 @@ TASKS = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
 
 def run_workflow(configf, pathsf, tasknamelist, redo):
     """Runs eukdimerdca workflow"""
-
     try:
         ic = InputConfig(configf, pathsf) 
     except IOError:

@@ -49,14 +49,15 @@ def run_easel(easelpath, databasepath, fastapath, keyfilepath, redo):
     return outpath
 
 
-def writeout_seqsnotfound(listoferrmessages, keyfilepath):
+def writeout_seqsnotfound(listoferrmessages, keyfilepath, fastapath):
     """Writes out easel error messages into a .easelerror file.
     This is done per set of keyfiles.
 
     :param listoferrmessages: list of stderrs, generated in run_easel_iterate 
     :param keyfilepath: pathlib.PosixPath, keyfile input in easel
     """
-    # TODO: where should we output the errors
+    # TODO: where should we output the errors - to fastapath
+    # TODO: can we actually test for the error output step?
     errorfilepath = Path(f"{keyfilepath.stem.split('_')[0]}.easelerror")
 
     with open(errorfilepath, 'a') as errf:
@@ -104,7 +105,7 @@ def run_easel_iterate(easelpath, databasepath, fastapath, keyfilepath, redo):
             f.write(seq)
 
     if seqsnotfound:
-        writeout_seqsnotfound(seqsnotfound, keyfilepath)
+        writeout_seqsnotfound(seqsnotfound, keyfilepath, fastapath)
 
     print(f'Fasta file with sequences written: {outpath}')
 
