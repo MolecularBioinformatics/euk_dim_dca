@@ -14,7 +14,7 @@ from pathlib import Path
 
 from io_utils import does_target_exist, easeled_seq_formatter
 
-def run_easel(easelpath, databasepath, phmmerpath, keyfilepath, redo):
+def run_easel(easelpath, databasepath, fastapath, keyfilepath, redo):
     """
     Spawns subprocess to run esl-sfetch.
 
@@ -26,7 +26,7 @@ def run_easel(easelpath, databasepath, phmmerpath, keyfilepath, redo):
     :returns outpath: pathlib.PosixPath, path to fasta with extracted seqs
     """
     filename = easeled_seq_formatter(keyfilepath)
-    outpath = phmmerpath.joinpath(filename)
+    outpath = fastapath.joinpath(filename)
 
     if not does_target_exist(keyfilepath, 'file'):
         raise FileNotFoundError(f'KEYFILE MISSING: Could not find {keyfilepath}!')
@@ -56,6 +56,7 @@ def writeout_seqsnotfound(listoferrmessages, keyfilepath):
     :param listoferrmessages: list of stderrs, generated in run_easel_iterate 
     :param keyfilepath: pathlib.PosixPath, keyfile input in easel
     """
+    # TODO: where should we output the errors
     errorfilepath = Path(f"{keyfilepath.stem.split('_')[0]}.easelerror")
 
     with open(errorfilepath, 'a') as errf:
@@ -63,7 +64,7 @@ def writeout_seqsnotfound(listoferrmessages, keyfilepath):
         errf.write(''.join(listoferrmessages))
 
 
-def run_easel_iterate(easelpath, databasepath, phmmerpath, keyfilepath, redo):
+def run_easel_iterate(easelpath, databasepath, fastapath, keyfilepath, redo):
     """Easel stops if it cannot find a sequence, no way
     to get it to continue sequence extraction.
     
@@ -76,7 +77,7 @@ def run_easel_iterate(easelpath, databasepath, phmmerpath, keyfilepath, redo):
     :param redo: bool, whether to re-extract
     """
     filename = easeled_seq_formatter(keyfilepath)
-    outpath = phmmerpath.joinpath(filename)
+    outpath = fastapath.joinpath(filename)
 
     if not does_target_exist(keyfilepath, 'file'):
         raise FileNotFoundError(f'KEYFILE MISSING: Could not find {keyfilepath}!')

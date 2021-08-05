@@ -167,11 +167,11 @@ def runeasel(icObj, rerun):
     """Runs easel on a keyfile.
     Extracts sequences from a db."""
     try:
-        icObj.eslfastafile1 = run_easel_iterate(icObj.easelpath, icObj.dbpath, icObj.phmmerpath, icObj.matchedkeyfile1, rerun)
+        icObj.eslfastafile1 = run_easel_iterate(icObj.easelpath, icObj.dbpath, icObj.fastapath, icObj.matchedkeyfile1, rerun)
     except FileNotFoundError as e:
         print(e)
     try:
-        icObj.eslfastafile2 = run_easel_iterate(icObj.easelpath, icObj.dbpath, icObj.phmmerpath, icObj.matchedkeyfile2, rerun)
+        icObj.eslfastafile2 = run_easel_iterate(icObj.easelpath, icObj.dbpath, icObj.fastapath, icObj.matchedkeyfile2, rerun)
     except FileNotFoundError as e:
         print(e)
     return icObj
