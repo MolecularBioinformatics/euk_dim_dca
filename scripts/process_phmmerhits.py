@@ -26,29 +26,29 @@ import io_utils as io
 from ordered_set import OrderedSet 
 
 
-def get_two_keyfiles_old(pathtophmmer, pdbid):
+def get_two_keyfiles_old(pathtokeyfiles, pdbid):
     """Checks dir for exactly 2 phmmer keyfiles for pdbid.
     Returns list of these two keyfiles if found.
 
-    :param pathtophmmer: pathlib.PosixPath
+    :param pathtokeyfiles: pathlib.PosixPath
     :param pdbid: str, 4-letter PDB id
 
     :returns keyfiles: list of pathlib.PosixPaths
     """
 
     keyfilefmt = f'{pdbid}*_refseq_phmmer.keyfile' 
-    keyfiles = io.get_globbed_list(pathtophmmer, keyfilefmt)
+    keyfiles = io.get_globbed_list(pathtokeyfiles, keyfilefmt)
 
     if len(keyfiles) != 2:
         raise ValueError(f'Number of keyfiles {len(keyfiles)} not equal to 2:\n{keyfiles}') 
     return keyfiles
 
 
-def get_two_keyfiles(pathtophmmer, keyfile1_path, keyfile2_path):
+def get_two_keyfiles(pathtokeyfiles, keyfile1_path, keyfile2_path):
     """Returns list of two keyfiles if both exist
-    in dir indicated by pathtophmmer
+    in dir indicated by pathtokeyfiles
 
-    :param pathtophmmer: pathlib.PosixPath
+    :param pathtokeyfiles: pathlib.PosixPath
     :param keyfile1: pathlib.PosixPath
     :param keyfile2: pathlib.PosixPath
 
@@ -163,13 +163,13 @@ def matched_keyfiles_exist(keyfilepaths, phmmerpath):
         return False
 
 
-def process_phmmerhits(pathtophmmer, keyfile1path, keyfile2path, minhits, maxhits, redo=False):  # TODO: refactor and break up into more functions
+def process_phmmerhits(pathtokeyfiles, keyfile1path, keyfile2path, minhits, maxhits, redo=False):  # TODO: refactor and break up into more functions
     """Performs post-processing of phmmer hits.
     Checks for suitable number of hits returned.
     Matches organisms for the hits and returns
     a matched keyfile.
 
-    :param pathtophmmer: pathlib.PosixPath
+    :param pathtokeyfiles: pathlib.PosixPath
     :param pdbid: str, 4-letter PDB id 
     :param minhits: int, minimum number of hits
     :param maxhits: int, maximum number of hits
@@ -180,11 +180,11 @@ def process_phmmerhits(pathtophmmer, keyfile1path, keyfile2path, minhits, maxhit
     print(f'MAXHITS: {maxhits}')
     print(f'OVERWRITE: {redo}\n')  # TODO: redo not yet incorporated, it does it automatically every time
 
-    keyfilepaths = get_two_keyfiles(pathtophmmer, keyfile1path, keyfile2path)
+    keyfilepaths = get_two_keyfiles(pathtokeyfiles, keyfile1path, keyfile2path)
 
-    if redo==False and matched_keyfiles_exist(keyfilepaths, pathtophmmer)==True:
+    if redo==False and matched_keyfiles_exist(keyfilepaths, pathtokeyfiles)==True:
         print(f'Matched keyfiles already exist!')
-        return pathtophmmer/io.matched_keyfile_formatter(keyfilepaths[0]), pathtophmmer/io.matched_keyfile_formatter(keyfilepaths[1])
+        return pathtokeyfiles/io.matched_keyfile_formatter(keyfilepaths[0]), pathtokeyfiles/io.matched_keyfile_formatter(keyfilepaths[1])
 
     hits = {}
     for keyfile in keyfilepaths:
@@ -210,7 +210,7 @@ def process_phmmerhits(pathtophmmer, keyfile1path, keyfile2path, minhits, maxhit
     keylist = []
     for keyfile in hits.keys():
         outfile = io.matched_keyfile_formatter(keyfile)
-        outpath = pathtophmmer / outfile
+        outpath = pathtokeyfiles / outfile
         keylist.append(outpath)
         io.writeout_list(list(hits[keyfile]), outpath) 
 
