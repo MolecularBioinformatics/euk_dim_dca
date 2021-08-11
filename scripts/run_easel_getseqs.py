@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-run_easel_getseqs.py
+""" run_easel_getseqs.py
 
 Runs HMMER easel tool to extract sequences from database.
 
@@ -93,9 +92,14 @@ def run_easel_iterate(easelpath, databasepath, fastapath, keyfilepath, redo):
     seqsnotfound = []
     with open(outpath, 'w+') as f:
         for item in idlist:
-            cmd = [f'{easelpath}/esl-sfetch',
-                   f'{databasepath}',
-                   f'{item}']
+            if easelpath == Path():
+                cmd = ['esl-sfetch',
+                        f'{databasepath}',
+                        f'{item}']
+            else:
+                cmd = [f'{easelpath}/esl-sfetch', 
+                        f'{databasepath}', 
+                        f'{item}']
             proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             if proc.returncode != 0:
                 error = proc.stderr.decode("utf-8")
