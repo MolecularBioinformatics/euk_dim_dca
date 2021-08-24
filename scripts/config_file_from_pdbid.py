@@ -56,3 +56,13 @@ def writeout_config_file(configpath, pdbid):
         f.write(f'pdbid={pdbid}\n')
         for name in nameslist:
             f.write(f'{name}=\n')
+
+if __name__=="__main__":
+
+    import argparse
+    parser = argparse.ArgumentParser(usage="python3 %(prog)s [-h] configpath pdbid")
+    parser.add_argument('configpath', help="path to config files")
+    parser.add_argument('pdbid', help="4-letter PDB ID")
+    args = parser.parse_args()
+
+    writeout_config_file(Path(args.configpath), args.pdbid)
