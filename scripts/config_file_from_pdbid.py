@@ -32,6 +32,7 @@ def writeout_config_file(configpath, pdbid):
     :param configpath: pathlib.PosixPath
     :param pdbid: str
     """
+    filepath = []
     try:
         filepath = find_config_file(configpath, pdbid)
     except FileExistsError as fee:
@@ -52,10 +53,11 @@ def writeout_config_file(configpath, pdbid):
                  'jointalnfile',
                  'mfdcaoutfile',]
 
-    with open(filepath, 'w+') as f:
-        f.write(f'pdbid={pdbid}\n')
-        for name in nameslist:
-            f.write(f'{name}=\n')
+    if filepath:
+        with open(filepath, 'w+') as f:
+            f.write(f'pdbid={pdbid}\n')
+            for name in nameslist:
+                f.write(f'{name}=\n')
 
 if __name__=="__main__":
 
