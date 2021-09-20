@@ -1,0 +1,4 @@
+/home/yin/UiT/EukComplex/eukdimerdca/testdata
+/data/databases/uniprot/2012-04-07/uniprot_complete.fasta
+/home/yin/UiT/EukComplex/eukdimerdca/testdata
+/home/yin/Packages/easel/miniapps

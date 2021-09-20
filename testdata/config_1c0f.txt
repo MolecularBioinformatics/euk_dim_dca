@@ -1,0 +1,15 @@
+pdbid=1c0f
+refseq1=
+refseq2=
+logfile1=
+logfile2=
+keyfile1=
+keyfile2=
+matchedkeyfile1=
+matchedkeyfile2=
+eslfastafile1=
+eslfastafile2=
+alnfile1=
+alnfile2=
+jointalnfile=
+mfdcaoutfile=

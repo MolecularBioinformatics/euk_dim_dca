@@ -1,0 +1,15 @@
+pdbid=1euc
+refseq1=/home/yin/EukDimDCA/fastas/1euc_B_refseq.fasta
+refseq2=/home/yin/EukDimDCA/fastas/1euc_A_refseq.fasta
+logfile1=/home/yin/EukDimDCA/phmmerlogs/1euc_B_refseq_phmmer.log
+logfile2=/home/yin/EukDimDCA/phmmerlogs/1euc_A_refseq_phmmer.log
+keyfile1=/home/yin/EukDimDCA/keyfiles/1euc_B_refseq_phmmer.keyfile
+keyfile2=/home/yin/EukDimDCA/keyfiles/1euc_A_refseq_phmmer.keyfile
+matchedkeyfile1=/home/yin/EukDimDCA/keyfiles/1euc_B_refseq_phmmer_matched.keyfile
+matchedkeyfile2=/home/yin/EukDimDCA/keyfiles/1euc_A_refseq_phmmer_matched.keyfile
+eslfastafile1=/home/yin/EukDimDCA/fastas/1euc_B_refseq_phmmer_matched.fasta
+eslfastafile2=/home/yin/EukDimDCA/fastas/1euc_A_refseq_phmmer_matched.fasta
+alnfile1=/home/yin/EukDimDCA/alignments/1euc_B_refseq_phmmer_matched.aln
+alnfile2=/home/yin/EukDimDCA/alignments/1euc_A_refseq_phmmer_matched.aln
+jointalnfile=/home/yin/EukDimDCA/alignments/Joint_1euc_B_1euc_A_aln.fasta
+mfdcaoutfile=/home/yin/EukDimDCA/dcascores/Joint_1euc_B_1euc_A_aln_mfdca_scores.dat
