@@ -8,13 +8,16 @@ Runs pydca for a given joint alignment
 2. Then choose either plmdca or mfdca
 """
 
+import sys
+sys.path.append("/cluster/projects/nn9795k/yin/pydca-master/pydca")
+
 import time
 import subprocess
 from pathlib import Path
 
 from io_utils import does_target_exist
-from pydca.meanfield_dca import meanfield_dca
-from pydca.sequence_backmapper import sequence_backmapper
+from meanfield_dca import meanfield_dca
+from sequence_backmapper import sequence_backmapper
 
 
 def run_pydca_mfdca(jointaln_path, redo):
@@ -76,5 +79,44 @@ def run_dca(jointaln_path, outpath, redo, method='mfdca'):
     if not dcascores:
         raise ValueError('DCA run unsuccessful!')
     writeout_scores(dcascores, jointaln_path, outfilepath)
+    print(f'DCA scores written into {outfilepath}')
+    return outfilepath
+
+def run_mfdca_saga(jointaln_path, outpath, redo):
+    """
+    Runs dca method on a joint alignment.
+    Spawns subprocess to call method from the command line.
+    Written to be run on saga (errors with msa_numerics and numba)
+
+    :param jointaln_path: pathlib.PosixPath
+    :param outpath: pathlib.PosixPath
+    :param redo: bool
+
+    :returns outfilepath: pathlib.PosixPath
+    """
+
+    outfilename = f'MFDCA_apc_fn_scores_{jointaln_path.stem}.txt'
+    outfilepath = outpath / outfilename
+    cmdargs = ['python3', 
+               'mfdca_main.py',
+               'compute_fn',
+               'protein',
+               f'{jointaln_path}',
+               '--apc',
+               '--pseudocount',
+               '0.5', 
+               '--verbose',
+               '--output_dir',
+               f'{outpath}']
+
+    if not does_target_exist(jointaln_path, 'file'):
+        raise FileNotFoundError(f'JOINT ALN FILE MISSING: Could not find {jointaln_path}')
+    elif does_target_exist(outfilepath, 'file') and redo == False:
+        print(f'DCA scores files: ({outfilepath}) already exists in {outfilepath.parent}')
+        return outfilepath
+
+    proc = subprocess.run(cmdargs)
+    if proc.returncode != 0:
+        raise ValueError(f'DCA run unsuccessful!')
     print(f'DCA scores written into {outfilepath}')
     return outfilepath
