@@ -8,10 +8,13 @@ joins the matched sequences.
 Prepares an alignment for DCA.
 """
 
+import sys
+sys.path.append("/cluster/projects/nn9795k/yin/pydca-master/pydca")
+
 from pathlib import Path
 
 from io_utils import does_target_exist, parse_fasta, fa_todict, writeout_fasta
-from pydca.msa_trimmer import msa_trimmer
+from msa_trimmer import msa_trimmer
 
 
 def move_refseq_up(aln_path):
