@@ -7,6 +7,8 @@ INPUT:
 taskname = list of tasknames to run
 redo = boolean of whether or not to rerun tasks
 """
+import sys
+sys.path.append("/cluster/projects/nn9795k/yin/pydca-master/pydca")
 
 from pathlib import Path
 
@@ -182,7 +184,8 @@ def processeasel(icObj, redo):
     Keeps only seqs with common orgs."""
     easelerrfile = Path(f"{icObj.fastapath}/{icObj.pdbid}.easelerror")
     if not easelerrfile.is_file():
-        print('No easel error file found. Continuting with original matched fastas')
+        print('No easel error file found. Continuting with original matched fastas:')
+        print(f'{icObj.eslfastafile1}\n{icObj.eslfastafile2}')
     else:
         try:
             orgs = process_easelseqs(easelerrfile, icObj.eslfastafile1, redo)
