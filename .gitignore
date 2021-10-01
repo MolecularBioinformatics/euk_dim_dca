@@ -130,3 +130,8 @@ dmypy.json
 
 # Slurm
 *.out
+
+# Selina's local folders
+configs/
+refseqfiles/
+.idea/
