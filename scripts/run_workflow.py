@@ -38,6 +38,7 @@ class InputConfig():
         self.fastapath = ''
         self.phmmerpath = ''
         self.keyfilepath = ''
+        self.multifastapath = ''
         self.alnpath = ''
         self.dcapath = ''
 
@@ -169,11 +170,11 @@ def runeasel(icObj, rerun):
     """Runs easel on a keyfile.
     Extracts sequences from a db."""
     try:
-        icObj.eslfastafile1 = run_easel_iterate(icObj.easelpath, icObj.dbpath, icObj.fastapath, icObj.matchedkeyfile1, rerun)
+        icObj.eslfastafile1 = run_easel_iterate(icObj.easelpath, icObj.dbpath, icObj.multifastapath, icObj.matchedkeyfile1, rerun)
     except FileNotFoundError as e:
         print(e)
     try:
-        icObj.eslfastafile2 = run_easel_iterate(icObj.easelpath, icObj.dbpath, icObj.fastapath, icObj.matchedkeyfile2, rerun)
+        icObj.eslfastafile2 = run_easel_iterate(icObj.easelpath, icObj.dbpath, icObj.multifastapath, icObj.matchedkeyfile2, rerun)
     except FileNotFoundError as e:
         print(e)
     return icObj
@@ -182,7 +183,7 @@ def runeasel(icObj, rerun):
 def processeasel(icObj, redo):
     """Processes easel extracted fasta.
     Keeps only seqs with common orgs."""
-    easelerrfile = Path(f"{icObj.fastapath}/{icObj.pdbid}.easelerror")
+    easelerrfile = Path(f"{icObj.multifastapath}/{icObj.pdbid}.easelerror")
     if not easelerrfile.is_file():
         print('No easel error file found. Continuting with original matched fastas:')
         print(f'{icObj.eslfastafile1}\n{icObj.eslfastafile2}')
