@@ -66,6 +66,8 @@ def run_dca(jointaln_path, outpath, redo, method='mfdca'):
     :returns scorefile_path: pathlib.PosixPath
     """
 
+    print(f"DCA approach: {method}")
+
     outfilename = f'{jointaln_path.stem}_{method}_scores.dat'
     outfilepath = outpath / outfilename
 

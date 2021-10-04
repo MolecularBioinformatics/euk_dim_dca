@@ -26,7 +26,7 @@ class InputConfig():
     """Object to store names of intermediate files.
     Reads input from pathfile and datafile"""
 
-    def __init__(self, config, paths):
+    def __init__(self, config, paths, dcamethod):
         """Initiates the class"""
 
         # input paths
@@ -60,6 +60,9 @@ class InputConfig():
         self.mfdcaoutfile = ''
 
         self._read_inputs(config)
+
+        # DCA approach
+        self.dcamethod = dcamethod
 
     def _read_paths(self, paths):
         """Reads paths from paths.txt"""
@@ -242,7 +245,7 @@ def rundca(icObj, redo):
     """Runs dca on a joint alignment.
     Deposits scores into a scores.dat file."""
     try:
-        icObj.mfdcaoutfile = run_dca(icObj.jointalnfile, icObj.dcapath, redo)
+        icObj.mfdcaoutfile = run_dca(icObj.jointalnfile, icObj.dcapath, redo, icObj.dcamethod)
     except FileNotFoundError as fnotfound:
         print(fnotfound)
     except ValueError as valerr:
@@ -267,7 +270,7 @@ TASKS = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
 def run_workflow(configf, pathsf, tasknamelist, redo, dca_method):
     """Runs eukdimerdca workflow"""
     try:
-        ic = InputConfig(configf, pathsf)
+        ic = InputConfig(configf, pathsf, dca_method)
     except IOError:
         ic = None
 
@@ -304,8 +307,8 @@ def main():
     redoflag = args.redo
     dca_method = args.dca_method
 
-    methods = ["mf", "plm", "gauss"]
-    if dca_method not in methods:
+    valid_methods = ["mf", "plm", "gauss"]
+    if dca_method not in valid_methods:
         raise ValueError(f"{dca_method} not a valid DCA approach. Try again or type -h for help.")
 
     if redoflag is None:
