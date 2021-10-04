@@ -33,6 +33,7 @@ def run_pydca_mfdca(jointaln_path, redo):
     start = time.perf_counter()
     mfdca_FN_APC = mfdca_inst.compute_sorted_FN_APC()
     stop = time.perf_counter()
+    print(f'mfDCA ran in {stop - start:0.4f} seconds')
 
     return mfdca_FN_APC
 
