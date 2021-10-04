@@ -23,6 +23,7 @@ from align_seqs import *
 from process_alnseqs import *
 from run_dca import *
 
+
 class InputConfig():
     """Object to store names of intermediate files.
     Reads input from pathfile and datafile"""
@@ -61,7 +62,6 @@ class InputConfig():
         self.mfdcaoutfile = '' 
 
         self._read_inputs(config)
-
 
     def _read_paths(self, paths):
         """Reads paths from paths.txt"""
@@ -260,7 +260,8 @@ TASKS = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
          'processalignment': ('8. matches and joins aligned sequences\n', processalignment),
          'rundca': ('9. runs DCA on joint aligned sequences\n', rundca)} 
 
-def run_workflow(configf, pathsf, tasknamelist, redo):
+
+def run_workflow(configf, pathsf, tasknamelist, redo, dca_method):
     """Runs eukdimerdca workflow"""
     try:
         ic = InputConfig(configf, pathsf) 
@@ -279,19 +280,31 @@ def run_workflow(configf, pathsf, tasknamelist, redo):
         print('\n')
         ic.update_config_var(configf)
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
 
     import argparse
     parser = argparse.ArgumentParser(usage="python3 %(prog)s [-h] configfile pathfile taskname [taskname, ...] --redo")
     parser.add_argument("configfile", help="path to config.txt file")
     parser.add_argument("pathfile", help="path to paths.txt file")
-    parser.add_argument("taskname", nargs = '+', help="task to run: findrefseqs, runphmmer, parsephmmer, processphmmer, runeasel, processeasel, alignseqs, processalignment, rundca")
+    parser.add_argument("taskname", nargs = '+', help="task to run: findrefseqs, runphmmer, parsephmmer, processphmmer,"
+                                                      " runeasel, processeasel, alignseqs, processalignment, rundca")
     parser.add_argument("-r", "--redo", help="True/False to re-parse out keyfile")
+    parser.add_argumetn("-d", "--dca_method", help="mf/plm/gauss, choose which DCA approach you want to use:"
+                                                   "mf: mean-field, "
+                                                   "plm: pseudo-likelihood maximization, "
+                                                   "gauss: gaussian "
+                                                   "default is mf", default="mf", type=str)
     args = parser.parse_args()
 
     configfile = args.configfile
     pathfile = args.pathfile
     redoflag = args.redo
+    dca_method = args.dca_method
+
+    methods = ["mf", "plm", "gauss"]
+    if dca_method not in methods:
+        raise ValueError(f"{dca_method} not a valid DCA approach. Try again.")
 
     if redoflag is None:
         redoflag = False
@@ -304,4 +317,4 @@ if __name__=="__main__":
         tasklist = [args.taskname]
     else:
         tasklist = args.taskname
-    run_workflow(configfile, pathfile, tasklist, redoflag)
+    run_workflow(configfile, pathfile, tasklist, redoflag, dca_method)
