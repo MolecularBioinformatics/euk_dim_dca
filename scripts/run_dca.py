@@ -9,18 +9,15 @@ Runs pydca for a given joint alignment
 """
 
 import sys
-sys.path.append("/cluster/projects/nn9795k/yin/pydca-master/pydca")
-
 import time
 import subprocess
-from pathlib import Path
-
 from io_utils import does_target_exist
 from meanfield_dca import meanfield_dca
-from sequence_backmapper import sequence_backmapper
+
+sys.path.append("/cluster/projects/nn9795k/yin/pydca-master/pydca")
 
 
-def run_pydca_mfdca(jointaln_path, redo):
+def run_pydca_mfdca(jointaln_path):
     """
     Spawns subprocess to run pydca mfdca.
 
@@ -31,11 +28,12 @@ def run_pydca_mfdca(jointaln_path, redo):
     :returns mfdca_FN_APC: list
     """
 
-    mfdca_inst = meanfield_dca.MeanFieldDCA(str(jointaln_path),'protein', pseudocount = 0.5, seqid = 0.8)
+    mfdca_inst = meanfield_dca.MeanFieldDCA(str(jointaln_path), 'protein', pseudocount=0.5, seqid=0.8)
 
     start = time.perf_counter()
     mfdca_FN_APC = mfdca_inst.compute_sorted_FN_APC()
     stop = time.perf_counter()
+    print(f'mfDCA ran in {stop - start:0.4f} seconds')
 
     return mfdca_FN_APC
 
@@ -53,7 +51,7 @@ def writeout_scores(dcalist, jointalnpath, outfilepath, method='mfdca'):
             outf.write(f'{scorepair[0][0]}\t{scorepair[0][1]}\t{scorepair[1]}\n')
 
 
-def run_dca(jointaln_path, outpath, redo, method='mfdca'):
+def run_dca(jointaln_path, outpath, redo, method):
     """
     Runs dca method (default mfdca) on a joint alignment.
 
@@ -66,23 +64,34 @@ def run_dca(jointaln_path, outpath, redo, method='mfdca'):
     :returns scorefile_path: pathlib.PosixPath
     """
 
-    print(f"DCA approach: {method}")
-
     outfilename = f'{jointaln_path.stem}_{method}_scores.dat'
     outfilepath = outpath / outfilename
 
     if not does_target_exist(jointaln_path, 'file'):
         raise FileNotFoundError(f'JOINT ALN FILE MISSING: Could not find {jointaln_path}')
-    elif does_target_exist(outfilepath, 'file') and redo == False:
+    elif does_target_exist(outfilepath, 'file') and redo is False:
         print(f'DCA scores files: ({outfilepath}) already exists in {outfilepath.parent}')
         return outfilepath
 
-    dcascores = run_pydca_mfdca(jointaln_path, redo)
-    if not dcascores:
-        raise ValueError('DCA run unsuccessful!')
-    writeout_scores(dcascores, jointaln_path, outfilepath)
+    print(f"DCA approach: {method}")
+
+    if method == "mf":
+        # mean-fiel DCA approach by pydca
+        dcascores = run_pydca_mfdca(jointaln_path)
+        if not dcascores:
+            raise ValueError('DCA run unsuccessful!')
+        writeout_scores(dcascores, jointaln_path, outfilepath)
+
+    elif method == "plm":
+        # pseudo-likelihood maximization DCA approach by CCMPred
+        pass  # TODO CCMPred
+    else:
+        # gaussian DCA approach by gaussDCA
+        pass  # TODO Gauss
+
     print(f'DCA scores written into {outfilepath}')
     return outfilepath
+
 
 def run_mfdca_saga(jointaln_path, outpath, redo):
     """
