@@ -17,7 +17,7 @@ from meanfield_dca import meanfield_dca
 sys.path.append("/cluster/projects/nn9795k/yin/pydca-master/pydca")
 
 
-def run_pydca_mfdca(jointaln_path, redo):
+def run_pydca_mfdca(jointaln_path):
     """
     Spawns subprocess to run pydca mfdca.
 
@@ -28,7 +28,7 @@ def run_pydca_mfdca(jointaln_path, redo):
     :returns mfdca_FN_APC: list
     """
 
-    mfdca_inst = meanfield_dca.MeanFieldDCA(str(jointaln_path),'protein', pseudocount = 0.5, seqid = 0.8)
+    mfdca_inst = meanfield_dca.MeanFieldDCA(str(jointaln_path), 'protein', pseudocount=0.5, seqid=0.8)
 
     start = time.perf_counter()
     mfdca_FN_APC = mfdca_inst.compute_sorted_FN_APC()
