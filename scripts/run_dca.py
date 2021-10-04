@@ -64,18 +64,18 @@ def run_dca(jointaln_path, outpath, redo, method):
     :returns scorefile_path: pathlib.PosixPath
     """
 
-    print(f"DCA approach: {method}")
-
     outfilename = f'{jointaln_path.stem}_{method}_scores.dat'
     outfilepath = outpath / outfilename
 
     if not does_target_exist(jointaln_path, 'file'):
         raise FileNotFoundError(f'JOINT ALN FILE MISSING: Could not find {jointaln_path}')
-    elif does_target_exist(outfilepath, 'file') and redo == False:
+    elif does_target_exist(outfilepath, 'file') and redo is False:
         print(f'DCA scores files: ({outfilepath}) already exists in {outfilepath.parent}')
         return outfilepath
 
-    dcascores = run_pydca_mfdca(jointaln_path, redo)
+    print(f"DCA approach: {method}")
+
+    dcascores = run_pydca_mfdca(jointaln_path)
     if not dcascores:
         raise ValueError('DCA run unsuccessful!')
     writeout_scores(dcascores, jointaln_path, outfilepath)
