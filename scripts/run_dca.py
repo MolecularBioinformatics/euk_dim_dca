@@ -9,15 +9,12 @@ Runs pydca for a given joint alignment
 """
 
 import sys
-sys.path.append("/cluster/projects/nn9795k/yin/pydca-master/pydca")
-
 import time
 import subprocess
-from pathlib import Path
-
 from io_utils import does_target_exist
 from meanfield_dca import meanfield_dca
-from sequence_backmapper import sequence_backmapper
+
+sys.path.append("/cluster/projects/nn9795k/yin/pydca-master/pydca")
 
 
 def run_pydca_mfdca(jointaln_path, redo):
@@ -53,7 +50,7 @@ def writeout_scores(dcalist, jointalnpath, outfilepath, method='mfdca'):
             outf.write(f'{scorepair[0][0]}\t{scorepair[0][1]}\t{scorepair[1]}\n')
 
 
-def run_dca(jointaln_path, outpath, redo, method='mfdca'):
+def run_dca(jointaln_path, outpath, redo, method):
     """
     Runs dca method (default mfdca) on a joint alignment.
 
@@ -83,6 +80,7 @@ def run_dca(jointaln_path, outpath, redo, method='mfdca'):
     writeout_scores(dcascores, jointaln_path, outfilepath)
     print(f'DCA scores written into {outfilepath}')
     return outfilepath
+
 
 def run_mfdca_saga(jointaln_path, outpath, redo):
     """
