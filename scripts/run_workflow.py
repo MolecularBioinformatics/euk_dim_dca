@@ -138,13 +138,13 @@ def parsephmmer(icObj, overwrite):
     except FileNotFoundError as fnotfound:
         print(fnotfound)
     except ValueError as fileempty:
-        print(filempty)
+        print(fileempty)
     try:
         icObj.keyfile2 = parse_accid_phmmerlog(icObj.logfile2, icObj.keyfilepath, overwrite)
     except FileNotFoundError as fnotfound:
         print(fnotfound)
     except ValueError as fileempty:
-        print(filempty)
+        print(fileempty)
     finally:
         return icObj
 
