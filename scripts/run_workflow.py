@@ -8,12 +8,10 @@ taskname = list of tasknames to run
 redo = boolean of whether or not to rerun tasks
 """
 import sys
+
 sys.path.append("/cluster/projects/nn9795k/yin/pydca-master/pydca")
 
-from pathlib import Path
-
 from find_refseq_files import *
-from io_utils import *
 from run_phmmer import *
 from parse_accid_phmmerlog import *
 from process_phmmerhits import *
@@ -59,7 +57,7 @@ class InputConfig():
         self.alnfile1 = ''
         self.alnfile2 = ''
         self.jointalnfile = ''
-        self.mfdcaoutfile = '' 
+        self.mfdcaoutfile = ''
 
         self._read_inputs(config)
 
@@ -87,10 +85,10 @@ class InputConfig():
         with open(config, 'w+') as c:
             for key, item in self.__dict__.items():
                 if not key.endswith('path'):
-                    c.write(f'{key}={item}\n') 
+                    c.write(f'{key}={item}\n')
 
 
-def findrefseqs(icObject, redo): 
+def findrefseqs(icObject, redo):
     """Finds two refseqs for pdbid.
 
     :param icObject: InputConfig object
@@ -100,8 +98,8 @@ def findrefseqs(icObject, redo):
     try:
         refseqpaths = find_refseq_files(icObject.pdbid, icObject.fastapath)
         print(f'Found these refseq files:\n{refseqpaths}')
-        icObject.refseq1=refseqpaths[0]
-        icObject.refseq2=refseqpaths[1]
+        icObject.refseq1 = refseqpaths[0]
+        icObject.refseq2 = refseqpaths[1]
     except TypeError as pdberr:
         print(pdberr)
     except FileNotFoundError as nofileerr:
@@ -112,7 +110,7 @@ def findrefseqs(icObject, redo):
         return icObject
 
 
-def runphmmer(icObj, rerun): 
+def runphmmer(icObj, rerun):
     """Runs phmmer on seq.
     Takes and returns an InputConfigObj."""
     try:
@@ -159,8 +157,9 @@ def processphmmer(icObj, overwrite):
     maxhits = 600
 
     try:
-        icObj.matchedkeyfile1, icObj.matchedkeyfile2 = process_phmmerhits(icObj.keyfilepath, icObj.keyfile1, icObj.keyfile2, minhits, maxhits, overwrite)
-    except ValueError as valerr: 
+        icObj.matchedkeyfile1, icObj.matchedkeyfile2 = process_phmmerhits(icObj.keyfilepath, icObj.keyfile1,
+                                                                          icObj.keyfile2, minhits, maxhits, overwrite)
+    except ValueError as valerr:
         raise ValueError('Unable to process keyfiles.') from valerr
     finally:
         return icObj
@@ -170,11 +169,13 @@ def runeasel(icObj, rerun):
     """Runs easel on a keyfile.
     Extracts sequences from a db."""
     try:
-        icObj.eslfastafile1 = run_easel_iterate(icObj.easelpath, icObj.dbpath, icObj.multifastapath, icObj.matchedkeyfile1, rerun)
+        icObj.eslfastafile1 = run_easel_iterate(icObj.easelpath, icObj.dbpath, icObj.multifastapath,
+                                                icObj.matchedkeyfile1, rerun)
     except FileNotFoundError as e:
         print(e)
     try:
-        icObj.eslfastafile2 = run_easel_iterate(icObj.easelpath, icObj.dbpath, icObj.multifastapath, icObj.matchedkeyfile2, rerun)
+        icObj.eslfastafile2 = run_easel_iterate(icObj.easelpath, icObj.dbpath, icObj.multifastapath,
+                                                icObj.matchedkeyfile2, rerun)
     except FileNotFoundError as e:
         print(e)
     return icObj
@@ -227,7 +228,8 @@ def processalignment(icObj, redo):
     Joins (horizontally concatenates) matched sequences
     to make a joint alignment file for DCA"""
     try:
-        icObj.jointalnfile = process_alnseqs(icObj.alnfile1, icObj.alnfile2, icObj.refseq1, icObj.refseq2, icObj.alnpath, redo)
+        icObj.jointalnfile = process_alnseqs(icObj.alnfile1, icObj.alnfile2, icObj.refseq1, icObj.refseq2,
+                                             icObj.alnpath, redo)
     except FileNotFoundError as fnotfound:
         print(fnotfound)
     except ValueError as valerr:
@@ -248,7 +250,8 @@ def rundca(icObj, redo):
     return icObj
 
 
-TASKNAMES = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel', 'processeasel', 'alignseqs', 'processalignment', 'rundca'] 
+TASKNAMES = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel', 'processeasel', 'alignseqs',
+             'processalignment', 'rundca']
 
 TASKS = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
          'runphmmer': ('2. run phmmer on refseq\n', runphmmer),
@@ -258,24 +261,24 @@ TASKS = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
          'processeasel': ('6. process easel extracted seqs based on organisms\n', processeasel),
          'alignseqs': ('7. aligns sequences with muscle\n', alignseqs),
          'processalignment': ('8. matches and joins aligned sequences\n', processalignment),
-         'rundca': ('9. runs DCA on joint aligned sequences\n', rundca)} 
+         'rundca': ('9. runs DCA on joint aligned sequences\n', rundca)}
 
 
 def run_workflow(configf, pathsf, tasknamelist, redo, dca_method):
     """Runs eukdimerdca workflow"""
     try:
-        ic = InputConfig(configf, pathsf) 
+        ic = InputConfig(configf, pathsf)
     except IOError:
         ic = None
 
     if 'all' in tasknamelist:
         tasknamelist = TASKNAMES[1:]
 
-    for taskname in tasknamelist: 
+    for taskname in tasknamelist:
         if taskname not in TASKNAMES:
             raise ValueError(f'{taskname} not a valid task. Try again.')
         print(f'--- {taskname} --- {TASKS[taskname][0]}')
-        torun = TASKS[taskname][1] 
+        torun = TASKS[taskname][1]
         ic = torun(ic, redo)
         print('\n')
         ic.update_config_var(configf)
@@ -284,11 +287,12 @@ def run_workflow(configf, pathsf, tasknamelist, redo, dca_method):
 if __name__ == "__main__":
 
     import argparse
+
     parser = argparse.ArgumentParser(usage="python3 %(prog)s [-h] configfile pathfile taskname [taskname, ...] --redo")
     parser.add_argument("configfile", help="path to config.txt file")
     parser.add_argument("pathfile", help="path to paths.txt file")
-    parser.add_argument("taskname", nargs = '+', help="task to run: findrefseqs, runphmmer, parsephmmer, processphmmer,"
-                                                      " runeasel, processeasel, alignseqs, processalignment, rundca")
+    parser.add_argument("taskname", nargs='+', help="task to run: findrefseqs, runphmmer, parsephmmer, processphmmer,"
+                                                    " runeasel, processeasel, alignseqs, processalignment, rundca")
     parser.add_argument("-r", "--redo", help="True/False to re-parse out keyfile")
     parser.add_argumetn("-d", "--dca_method", help="mf/plm/gauss, choose which DCA approach you want to use:"
                                                    "mf: mean-field, "
