@@ -75,10 +75,20 @@ def run_dca(jointaln_path, outpath, redo, method):
 
     print(f"DCA approach: {method}")
 
-    dcascores = run_pydca_mfdca(jointaln_path)
-    if not dcascores:
-        raise ValueError('DCA run unsuccessful!')
-    writeout_scores(dcascores, jointaln_path, outfilepath)
+    if method == "mf":
+        # mean-fiel DCA approach by pydca
+        dcascores = run_pydca_mfdca(jointaln_path)
+        if not dcascores:
+            raise ValueError('DCA run unsuccessful!')
+        writeout_scores(dcascores, jointaln_path, outfilepath)
+
+    elif method == "plm":
+        # pseudo-likelihood maximization DCA approach by CCMPred
+        pass  # TODO CCMPred
+    else:
+        # gaussian DCA approach by gaussDCA
+        pass  # TODO Gauss
+
     print(f'DCA scores written into {outfilepath}')
     return outfilepath
 
