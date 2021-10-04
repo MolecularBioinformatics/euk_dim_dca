@@ -87,7 +87,13 @@ def run_dca(jointaln_path, outpath, redo, method):
         pass  # TODO CCMPred
     else:
         # gaussian DCA approach by gaussDCA
-        pass  # TODO Gauss
+        start = time.perf_counter()
+        cmd = ["julia", "run_gaussdca.jl", str(jointaln_path)]
+        proc = subprocess.run(cmd)
+        if proc.returncode != 0:
+            raise ValueError(f'GaussDCA run unsuccessful!')
+        stop = time.perf_counter()
+        print(f'mfDCA ran in {stop - start:0.4f} seconds')
 
     print(f'DCA scores written into {outfilepath}')
     return outfilepath
