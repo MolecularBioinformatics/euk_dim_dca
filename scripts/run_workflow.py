@@ -8,9 +8,6 @@ taskname = list of tasknames to run
 redo = boolean of whether or not to rerun tasks
 """
 import sys
-
-sys.path.append("/cluster/projects/nn9795k/yin/pydca-master/pydca")
-
 from find_refseq_files import *
 from run_phmmer import *
 from parse_accid_phmmerlog import *
@@ -21,6 +18,7 @@ from align_seqs import *
 from process_alnseqs import *
 from run_dca import *
 
+sys.path.append("/cluster/projects/nn9795k/yin/pydca-master/pydca")
 
 class InputConfig():
     """Object to store names of intermediate files.
@@ -294,7 +292,7 @@ if __name__ == "__main__":
     parser.add_argument("taskname", nargs='+', help="task to run: findrefseqs, runphmmer, parsephmmer, processphmmer,"
                                                     " runeasel, processeasel, alignseqs, processalignment, rundca")
     parser.add_argument("-r", "--redo", help="True/False to re-parse out keyfile")
-    parser.add_argumetn("-d", "--dca_method", help="mf/plm/gauss, choose which DCA approach you want to use:"
+    parser.add_argument("-d", "--dca_method", help="mf/plm/gauss, choose which DCA approach you want to use:"
                                                    "mf: mean-field, "
                                                    "plm: pseudo-likelihood maximization, "
                                                    "gauss: gaussian "
