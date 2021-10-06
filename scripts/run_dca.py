@@ -2,11 +2,10 @@
 """
 run_dca.py
 
-Runs pydca for a given joint alignment
+Runs dca for a given joint alignment
 
 1. First trim MSA with pydca's trimmer
-2. Then choose either plmdca or mfdca
-"""
+2. Then run plmdca, mfdca or gaussdca on aln"""
 
 import sys
 import time
@@ -88,12 +87,12 @@ def run_dca(jointaln_path, outpath, redo, method):
     else:
         # gaussian DCA approach by gaussDCA
         start = time.perf_counter()
-        cmd = ["julia", "run_gaussdca.jl", str(jointaln_path)]
+        cmd = ["julia", "-t 8", "run_gaussdca.jl", str(jointaln_path), outfilepath]
         proc = subprocess.run(cmd)
         if proc.returncode != 0:
             raise ValueError(f'GaussDCA run unsuccessful!')
         stop = time.perf_counter()
-        print(f'mfDCA ran in {stop - start:0.4f} seconds')
+        print(f'gaussDCA ran in {stop - start:0.4f} seconds')
 
     print(f'DCA scores written into {outfilepath}')
     return outfilepath
