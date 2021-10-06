@@ -52,7 +52,7 @@ def writeout_scores(dcalist, jointalnpath, outfilepath, method='mfdca'):
 
 def run_dca(jointaln_path, outpath, redo, method):
     """
-    Runs dca method (default mfdca) on a joint alignment.
+    Runs dca method (default mf) on a joint alignment.
 
     Writes out scores to a []_scores.dat file.
 
@@ -63,7 +63,7 @@ def run_dca(jointaln_path, outpath, redo, method):
     :returns scorefile_path: pathlib.PosixPath
     """
 
-    outfilename = f'{jointaln_path.stem}_{method}_scores.dat'
+    outfilename = f'{jointaln_path.stem}_{method}dca_scores.dat'
     outfilepath = outpath / outfilename
 
     if not does_target_exist(jointaln_path, 'file'):
@@ -87,7 +87,7 @@ def run_dca(jointaln_path, outpath, redo, method):
     else:
         # gaussian DCA approach by gaussDCA
         start = time.perf_counter()
-        cmd = ["julia", "-t 8", "run_gaussdca.jl", str(jointaln_path), outfilepath]
+        cmd = ["julia", "-t 8", "run_gaussdca.jl", str(jointaln_path), outfilepath] # TODO threads?
         proc = subprocess.run(cmd)
         if proc.returncode != 0:
             raise ValueError(f'GaussDCA run unsuccessful!')
