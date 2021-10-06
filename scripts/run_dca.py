@@ -37,12 +37,12 @@ def run_pydca_mfdca(jointaln_path):
     return mfdca_FN_APC
 
 
-def writeout_scores(dcalist, jointalnpath, outfilepath, method='mfdca'):
+def writeout_scores(dcalist, outfilepath):
     """
     Writes out dca scores in 3 column file.
 
     :param dcalist: list of tuples [((i,j),score),...]
-    :param outpath: pathlib.PosixPath
+    :param outfilepath: pathlib.PosixPath
     """
 
     with open(outfilepath, 'w') as outf:
@@ -79,7 +79,7 @@ def run_dca(jointaln_path, outpath, redo, method):
         dcascores = run_pydca_mfdca(jointaln_path)
         if not dcascores:
             raise ValueError('DCA run unsuccessful!')
-        writeout_scores(dcascores, jointaln_path, outfilepath)
+        writeout_scores(dcascores, outfilepath)
 
     elif method == "plm":
         # pseudo-likelihood maximization DCA approach by CCMPred
