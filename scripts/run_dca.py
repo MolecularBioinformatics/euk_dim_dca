@@ -87,12 +87,22 @@ def run_dca(jointaln_path, outpath, redo, method):
     else:
         # gaussian DCA approach by gaussDCA
         start = time.perf_counter()
-        cmd = ["julia", "-t 8", "run_gaussdca.jl", str(jointaln_path), outfilepath] # TODO threads?
+        cmd = ["julia", "-t 8", "run_gaussdca.jl", str(jointaln_path), outfilepath]  # TODO threads?
         proc = subprocess.run(cmd)
         if proc.returncode != 0:
             raise ValueError(f'GaussDCA run unsuccessful!')
         stop = time.perf_counter()
         print(f'gaussDCA ran in {stop - start:0.4f} seconds')
+
+        # re edit format of scoring file
+        new_file_content = ""
+        for line in open(outfilepath, "r"):
+            new_file_content += line.replace(" ", "\t")
+
+        # overwrite existing scoring file with tab-separated scores
+        new_file = open(outfilepath, "w")
+        new_file.write(new_file_content)
+        new_file.close()
 
     print(f'DCA scores written into {outfilepath}')
     return outfilepath
