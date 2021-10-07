@@ -50,6 +50,37 @@ def writeout_scores(dcalist, outfilepath):
             outf.write(f'{scorepair[0][0]}\t{scorepair[0][1]}\t{scorepair[1]}\n')
 
 
+def run_gaussdca(aln_path, outfile_path):
+    """
+    Runs GaussDCA over the Julia script run_gaussdca.jl on input alignment and stores the scores in the outfilepath
+    :param aln_path: path and filename of joint MSA (pathlib.PosixPath)
+    :param outfile_path: path and filename of output DCA score file (pathlib.PosixPath)
+    """
+    start = time.perf_counter()
+    cmd = ["julia", "-t 8", "run_gaussdca.jl", str(aln_path), outfile_path]  # TODO threads?
+    proc = subprocess.run(cmd)
+    if proc.returncode != 0:
+        raise ValueError(f'GaussDCA run unsuccessful!')
+    stop = time.perf_counter()
+    print(f'gaussDCA ran in {stop - start:0.4f} seconds')
+
+
+def reformat_scoring_file(outfilepath):
+    """
+    Replaces whitespaces with tabs in file stored at outfilepath
+    :param outfile_path: path and filename of output DCA score file (pathlib.PosixPath)
+    """
+    # replace all spaces by tabs and save tab-separated file content in new_file_content
+    new_file_content = ""
+    for line in open(outfilepath, "r"):
+        new_file_content += line.replace(" ", "\t")
+
+    # overwrite existing scoring file with tab-separated scores
+    new_file = open(outfilepath, "w")
+    new_file.write(new_file_content)
+    new_file.close()
+
+
 def run_dca(jointaln_path, outpath, redo, method):
     """
     Runs dca method (default mf) on a joint alignment.
@@ -86,23 +117,10 @@ def run_dca(jointaln_path, outpath, redo, method):
         pass  # TODO CCMPred
     else:
         # gaussian DCA approach by gaussDCA
-        start = time.perf_counter()
-        cmd = ["julia", "-t 8", "run_gaussdca.jl", str(jointaln_path), outfilepath]  # TODO threads?
-        proc = subprocess.run(cmd)
-        if proc.returncode != 0:
-            raise ValueError(f'GaussDCA run unsuccessful!')
-        stop = time.perf_counter()
-        print(f'gaussDCA ran in {stop - start:0.4f} seconds')
+        run_gaussdca(jointaln_path, outfilepath)
 
-        # re edit format of scoring file
-        new_file_content = ""
-        for line in open(outfilepath, "r"):
-            new_file_content += line.replace(" ", "\t")
-
-        # overwrite existing scoring file with tab-separated scores
-        new_file = open(outfilepath, "w")
-        new_file.write(new_file_content)
-        new_file.close()
+        # edit format of scoring file
+        reformat_scoring_file(outfilepath)
 
     print(f'DCA scores written into {outfilepath}')
     return outfilepath
