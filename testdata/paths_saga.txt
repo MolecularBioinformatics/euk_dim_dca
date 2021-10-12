@@ -1,7 +1,9 @@
 dbpath=/cluster/projects/nn9795k/yin/databases/uniprot_complete.fasta
+ccmpredpath=/cluster/projects/nn9795k/selina/CCMpred
 easelpath=
 fastapath=/cluster/projects/nn9795k/selina/refseqfiles
 phmmerpath=/cluster/projects/nn9795k/selina/phmmerlogs
 keyfilepath=/cluster/projects/nn9795k/selina/keyfiles
+multifastapath=/cluster/projects/nn9795k/selina/multifastafiles
 alnpath=/cluster/projects/nn9795k/selina/alignments
 dcapath=/cluster/projects/nn9795k/selina/dcascores

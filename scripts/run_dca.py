@@ -12,6 +12,7 @@ import time
 import subprocess
 from io_utils import does_target_exist
 from meanfield_dca import meanfield_dca
+import convert_alignment
 
 sys.path.append("/cluster/projects/nn9795k/yin/pydca-master/pydca")
 
@@ -81,7 +82,7 @@ def reformat_scoring_file(outfilepath):
     new_file.close()
 
 
-def run_dca(jointaln_path, outpath, redo, method):
+def run_dca(jointaln_path, outpath, redo, method, ccmpredpath):
     """
     Runs dca method (default mf) on a joint alignment.
 
@@ -113,8 +114,10 @@ def run_dca(jointaln_path, outpath, redo, method):
         writeout_scores(dcascores, outfilepath)
 
     elif method == "plm":
-        # pseudo-likelihood maximization DCA approach by CCMPred
-        pass  # TODO CCMPred
+        # pseudo-likelihood maximization DCA approach by CCMpred
+        pass  # TODO CCMpred
+        print("path to ccmpred installation: ", ccmpredpath)
+        # convert_alignment.main([aln, fmt, out])
     else:
         # gaussian DCA approach by gaussDCA
         run_gaussdca(jointaln_path, outfilepath)

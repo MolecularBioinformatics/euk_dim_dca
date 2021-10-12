@@ -31,6 +31,7 @@ class InputConfig():
 
         # input paths
         self.dbpath = ''
+        self.ccmpredpath = ''
         self.easelpath = ''
 
         # output paths
@@ -245,7 +246,7 @@ def rundca(icObj, redo):
     """Runs dca on a joint alignment.
     Deposits scores into a scores.dat file."""
     try:
-        icObj.mfdcaoutfile = run_dca(icObj.jointalnfile, icObj.dcapath, redo, icObj.dcamethod)
+        icObj.mfdcaoutfile = run_dca(icObj.jointalnfile, icObj.dcapath, redo, icObj.dcamethod, icObj.ccmpredpath)
     except FileNotFoundError as fnotfound:
         print(fnotfound)
     except ValueError as valerr:
@@ -294,7 +295,7 @@ def main():
     parser.add_argument("pathfile", help="path to paths.txt file")
     parser.add_argument("taskname", nargs='+', help="task to run: findrefseqs, runphmmer, parsephmmer, processphmmer,"
                                                     " runeasel, processeasel, alignseqs, processalignment, rundca")
-    parser.add_argument("-r", "--redo", help="True/False to re-parse out keyfile")
+    parser.add_argument("-r", "--redo", help="True/False to re-parse out keyfile") #TODO set flag as action="store_true", default=False, type=bool
     parser.add_argument("-d", "--dca_method", help="mf/plm/gauss, choose which DCA approach you want to use. "
                                                    "mf: mean-field, "
                                                    "plm: pseudo-likelihood maximization, "
