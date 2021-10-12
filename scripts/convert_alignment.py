@@ -4,6 +4,9 @@ Usage:  {prog} infile format outfile
         {prog} infile format
         {prog} format
 
+copied (1.10.2021) and modified (7.10.2021) from https://github.com/soedinglab/CCMpred
+released under liscense: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
+Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
 """
 
 import Bio.SeqIO
