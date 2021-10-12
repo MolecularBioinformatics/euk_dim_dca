@@ -117,7 +117,8 @@ def run_dca(jointaln_path, outpath, redo, method, ccmpredpath):
         # pseudo-likelihood maximization DCA approach by CCMpred
         pass  # TODO CCMpred
         print("path to ccmpred installation: ", ccmpredpath)
-        # convert_alignment.main([aln, fmt, out])
+        outfile_psicov = jointaln_path.replace(".fasta", ".psicov")
+        convert_alignment.main([jointaln_path, "fasta", outfile_psicov])
     else:
         # gaussian DCA approach by gaussDCA
         run_gaussdca(jointaln_path, outfilepath)
