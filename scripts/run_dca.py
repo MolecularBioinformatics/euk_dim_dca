@@ -60,9 +60,11 @@ def run_gaussdca(aln_path, outfile_path):
     """
     start = time.perf_counter()
     cmd = ["julia", "-t 8", "run_gaussdca.jl", str(aln_path), outfile_path]  # TODO threads?
-    proc = subprocess.run(cmd)
+    proc = subprocess.run(cmd, capture_output=True, text=True)
     if proc.returncode != 0:
         raise ValueError(f'GaussDCA run unsuccessful!')
+    print(proc.stdout)
+    print(proc.stderr)
     stop = time.perf_counter()
     print(f'gaussDCA ran in {stop - start:0.4f} seconds')
 
@@ -81,6 +83,25 @@ def reformat_scoring_file(outfilepath):
     new_file = open(outfilepath, "w")
     new_file.write(new_file_content)
     new_file.close()
+
+
+def run_plmdca(ccmpredpath, aln, outmtx):
+    """
+    Runs CCMpred via bash on an input joint alignment which was reformated with convert_alignment.py
+    Output scores are stored as matrix
+    :param ccmpredpath: path to CCMpred installation (pathlib.PosixPath)
+    :param aln: joint alignment (pathlib.PosixPath)
+    :param outmtx: output scoring matrix (pathlib.PosixPath)
+    """
+    run_ccmpred_cmd = ccmpredpath / "bin/ccmpred"
+
+    start = time.perf_counter()
+    cmd = [run_ccmpred_cmd, aln, outmtx] #TODO threads?
+    proc = subprocess.run(cmd)
+    if proc.returncode != 0:
+        raise ValueError(f'CCMpred run unsuccessful!')
+    stop = time.perf_counter()
+    print(f'CCMpred ran in {stop - start:0.4f} seconds')
 
 
 def run_dca(jointaln_path, outpath, redo, method, ccmpredpath):
@@ -126,15 +147,8 @@ def run_dca(jointaln_path, outpath, redo, method, ccmpredpath):
         # convert alignment that it fits as input for CCMpred
         convert_alignment.main([jointaln_path, "fasta", jointaln_fmt])
 
-        run_ccmpred_cmd = ccmpredpath / "bin/ccmpred"
-
-        start = time.perf_counter()
-        cmd = [run_ccmpred_cmd, jointaln_fmt, outmtx_file]
-        proc = subprocess.run(cmd)
-        if proc.returncode != 0:
-            raise ValueError(f'CCMpred run unsuccessful!')
-        stop = time.perf_counter()
-        print(f'CCMpred ran in {stop - start:0.4f} seconds')
+        run_plmdca(ccmpredpath, jointaln_fmt, outmtx_file)
+        # TODO reformat matrix to list as .dat file
 
     else:
         # gaussian DCA approach by gaussDCA
