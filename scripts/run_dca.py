@@ -93,7 +93,7 @@ def run_dca(jointaln_path, outpath, redo, method, ccmpredpath):
     :param outpath: pathlib.PosixPath
     :param redo: bool
     :param method: mf/plm/gauss which DCA method should be used (str)
-    :param ccmpredpath: path to CCMpred installation
+    :param ccmpredpath: path to CCMpred installation (pathlib.PosixPath)
 
     :returns scorefile_path: pathlib.PosixPath
     """
@@ -118,11 +118,24 @@ def run_dca(jointaln_path, outpath, redo, method, ccmpredpath):
 
     elif method == "plm":
         # pseudo-likelihood maximization DCA approach by CCMpred
-        pass  # TODO CCMpred
-        print("Type ccmpred path: ", type(ccmpredpath))
-        index = jointaln_path.parts.index(".fasta")
-        outfile_psicov = Path(".psicov").joinpath(*jointaln_path.parts.parts[index:])
-        convert_alignment.main([jointaln_path, "fasta", outfile_psicov])
+
+        # TODO not where elegant here... Store them as ipconfig attribute?
+        jointaln_fmt = Path(str(jointaln_path).replace(".fasta", "_fmt.fasta"))
+        outmtx_file = Path(str(outfilepath).replace(".dat", ".mat"))
+
+        # convert alignment that it fits as input for CCMpred
+        convert_alignment.main([jointaln_path, "fasta", jointaln_fmt])
+
+        run_ccmpred_cmd = ccmpredpath / "bin/ccmpred"
+
+        start = time.perf_counter()
+        cmd = [run_ccmpred_cmd, jointaln_fmt, outmtx_file]
+        proc = subprocess.run(cmd)
+        if proc.returncode != 0:
+            raise ValueError(f'CCMpred run unsuccessful!')
+        stop = time.perf_counter()
+        print(f'CCMpred ran in {stop - start:0.4f} seconds')
+
     else:
         # gaussian DCA approach by gaussDCA
         run_gaussdca(jointaln_path, outfilepath)
