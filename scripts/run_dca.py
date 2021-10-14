@@ -61,18 +61,18 @@ def run_gaussdca(aln_path, outfile_path):
     start = time.perf_counter()
     cmd = ["julia", "-t 8", "run_gaussdca.jl", str(aln_path), outfile_path]  # TODO threads?
     proc = subprocess.run(cmd, capture_output=True, text=True)
-    if proc.returncode != 0:
-        raise ValueError(f'GaussDCA run unsuccessful!')
     print(proc.stdout)
     print(proc.stderr)
     stop = time.perf_counter()
+    if proc.returncode != 0:
+        raise ValueError(f'GaussDCA run unsuccessful!')
     print(f'gaussDCA ran in {stop - start:0.4f} seconds')
 
 
 def reformat_scoring_file(outfilepath):
     """
     Replaces whitespaces with tabs in file stored at outfilepath
-    :param outfile_path: path and filename of output DCA score file (pathlib.PosixPath)
+    :param outfilepath: path and filename of output DCA score file (pathlib.PosixPath)
     """
     # replace all spaces by tabs and save tab-separated file content in new_file_content
     new_file_content = ""
