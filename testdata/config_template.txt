@@ -12,4 +12,8 @@ eslfastafile2=
 alnfile1=
 alnfile2=
 jointalnfile=
+jointalnconvfile=
 mfdcaoutfile=
+plmdcaoutfile=
+plmdcaoutmtxfile
+gaussdcaoutfile=

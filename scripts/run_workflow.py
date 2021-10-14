@@ -58,7 +58,11 @@ class InputConfig():
         self.alnfile1 = ''
         self.alnfile2 = ''
         self.jointalnfile = ''
+        self.jointalnconvfile = ''
         self.mfdcaoutfile = ''
+        self.plmdcaoutfile = ''
+        self.plmdcaoutmtxfile = ''
+        self.gaussdcaoutfile = ''
 
         self._read_inputs(config)
 
