@@ -29,6 +29,7 @@ def get_lengthsdict(fastafile):
 def plot_counts_hist(dictofcounts):
     """Makes histogram of counts of seqlengths"""
     plt.bar(list(dictofcounts.keys()), list(dictofcounts.values()), color='g')
+    plt.ylim(0,50)
     plt.show()
 
 def plot_seqlengths(fastafile):
