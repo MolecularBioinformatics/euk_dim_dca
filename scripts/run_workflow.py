@@ -249,8 +249,18 @@ def processalignment(icObj, redo):
 def rundca(icObj, redo):
     """Runs dca on a joint alignment.
     Deposits scores into a scores.dat file."""
+    dca_method = icObj.dcamethod
     try:
-        icObj.mfdcaoutfile = run_dca(icObj.jointalnfile, icObj.dcapath, redo, icObj.dcamethod, icObj.ccmpredpath)
+        if dca_method == "mf":
+            icObj.mfdcaoutfile, _, _ = run_dca(icObj.jointalnfile, icObj.dcapath, redo, dca_method)
+        elif dca_method == "plm":
+            icObj.plmdcaoutfile, icObj.jointalnconvfile, icObj.plmdcaoutmtxfile = run_dca(icObj.jointalnfile,
+                                                                                          icObj.dcapath, redo,
+                                                                                          dca_method,
+                                                                                          ccmpredpath=icObj.ccmpredpath,
+                                                                                          alnpath=icObj.alnpath)
+        elif dca_method == "gauss":
+            icObj.gaussdcaoutfile, _, _ = run_dca(icObj.jointalnfile, icObj.dcapath, redo, dca_method)
     except FileNotFoundError as fnotfound:
         print(fnotfound)
     except ValueError as valerr:
@@ -293,13 +303,13 @@ def run_workflow(configf, pathsf, tasknamelist, redo, dca_method):
 
 
 def main():
-
     parser = argparse.ArgumentParser(usage="python3 %(prog)s [-h] configfile pathfile taskname [taskname, ...]")
     parser.add_argument("configfile", help="path to config.txt file")
     parser.add_argument("pathfile", help="path to paths.txt file")
     parser.add_argument("taskname", nargs='+', help="task to run: findrefseqs, runphmmer, parsephmmer, processphmmer,"
                                                     " runeasel, processeasel, alignseqs, processalignment, rundca")
-    parser.add_argument("-r", "--redo", help="True/False to re-parse out keyfile") #TODO set flag as action="store_true", default=False, type=bool
+    parser.add_argument("-r", "--redo",
+                        help="True/False to re-parse out keyfile")  # TODO set flag as action="store_true", default=False, type=bool
     parser.add_argument("-d", "--dca_method", help="mf/plm/gauss, choose which DCA approach you want to use. "
                                                    "mf: mean-field, "
                                                    "plm: pseudo-likelihood maximization, "

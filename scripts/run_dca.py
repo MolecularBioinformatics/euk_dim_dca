@@ -104,7 +104,7 @@ def run_plmdca(ccmpredpath, aln, outmtx):
     print(f'CCMpred ran in {stop - start:0.4f} seconds')
 
 
-def run_dca(jointaln_path, outpath, redo, method, ccmpredpath):
+def run_dca(jointaln_path, outpath, redo, method, **kwargs):
     """
     Runs dca method (default mf) on a joint alignment.
 
@@ -130,6 +130,9 @@ def run_dca(jointaln_path, outpath, redo, method, ccmpredpath):
 
     print(f"DCA approach: {method}")
 
+    jointaln_conv = None  # two files that are only used for the plmDCA approach
+    outmtx_file = None
+
     if method == "mf":
         # mean-field DCA approach by pydca
         dcascores = run_pydca_mfdca(jointaln_path)
@@ -140,14 +143,22 @@ def run_dca(jointaln_path, outpath, redo, method, ccmpredpath):
     elif method == "plm":
         # pseudo-likelihood maximization DCA approach by CCMpred
 
-        # TODO not where elegant here... Store them as ipconfig attribute?
-        jointaln_fmt = Path(str(jointaln_path).replace(".fasta", "_fmt.fasta"))
-        outmtx_file = Path(str(outfilepath).replace(".dat", ".mat"))
+        ccmpredpath = kwargs.get("ccmpredpath", None)
+        alnpath = kwargs.get("alnpath", None)
+
+        # jointaln_conv = Path(str(jointaln_path).replace(".fasta", "_fmt.fasta"))
+        jointaln_conv = alnpath / f"{jointaln_path.stem}_conv.fasta"
+        # outmtx_file = Path(str(outfilepath).replace(".dat", ".mat"))
+        outmtx_file = outpath / f"{outfilename.stem}.mat"
 
         # convert alignment that it fits as input for CCMpred
-        convert_alignment.main([jointaln_path, "fasta", jointaln_fmt])
+        convert_alignment.main([jointaln_path, "fasta", jointaln_conv])
+        print(f"Converted alignment written to {jointaln_conv}")
 
-        run_plmdca(ccmpredpath, jointaln_fmt, outmtx_file)
+        # run CCMpred on converted alignment. Output is scoring matrix
+        run_plmdca(ccmpredpath, jointaln_conv, outmtx_file)
+        print(f"DCA score matrix written to {outmtx_file}")
+
         # TODO reformat matrix to list as .dat file
 
     else:
@@ -158,7 +169,7 @@ def run_dca(jointaln_path, outpath, redo, method, ccmpredpath):
         reformat_scoring_file(outfilepath)
 
     print(f'DCA scores written into {outfilepath}')
-    return outfilepath
+    return outfilepath, jointaln_conv, outmtx_file
 
 
 def run_mfdca_saga(jointaln_path, outpath, redo):
