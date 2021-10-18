@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 """
-Usage:  {prog} matrix_infile score_outfile
+Usage:  {prog} matrix_infile score_outfile (num-contacts) (min-separation)
+
+matrix_infile: DCA scores as matrix (.mat), output from CCMpred
+score_outfile: name of output file, which will be list of top scoring residue pairs
+num-contacts: Set the number of pairs to output [default: 30]
+min-separation: Set the minimum sequence separation of pairs to be outputted [default: 7]
 
 copied (1.10.2021) and modified (15.10.2021) from https://github.com/soedinglab/CCMpred
 released under liscense: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -11,15 +16,26 @@ import numpy as np
 import optparse
 
 
-def main():
-    parser = optparse.OptionParser(usage="%prog [options] coupling_matrix")
-    parser.add_option("-s", "--min-separation", type=int, default=7, help="Set the minimum sequence separation of pairs to be outputted [default: %default]")
-    parser.add_option("-n", "--num-contacts", type=int, default=30, help="Set the number of pairs to output [default: %default]")
+def main(args):
 
-    opt, args = parser.parse_args()
+    # check number of input arguments. Has to be between 2 and 4
+    if len(args) < 2:
+        raise ValueError("Too few arguments. Need at least matrix input file and output filename")
+    elif len(args) > 4:
+        raise ValueError("Too many arguments. Maximum: 4 arguments")
 
-    if len(args) != 1:
-        parser.error("Need positional argument!")
+    # set default values
+    num_contacts = 30
+    min_separation = 7
+
+    # parse args
+    matrix, outfile = args[:2]
+    if len(args) == 3:
+        num_contacts = args[2]
+    elif len(args) == 4:
+        num_contacts, min_separation = args[2:]
+
+    exit()
 
     # load coupling matrix
     mat = np.loadtxt(args[0])
@@ -47,4 +63,5 @@ def get_top_pairs(mat, num_contacts, min_separation):
 
 
 if __name__ == '__main__':
-    main()
+    import sys
+    main(sys.argv[1:])

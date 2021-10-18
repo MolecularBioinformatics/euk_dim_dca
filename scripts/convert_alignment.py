@@ -61,6 +61,7 @@ def usage():
     import sys
     print(__doc__.format(prog=sys.argv[0]))
 
+
 if __name__ == '__main__':
     import sys
     main(sys.argv[1:])
