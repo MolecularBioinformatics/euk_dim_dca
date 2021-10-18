@@ -13,7 +13,6 @@ Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
 """
 
 import numpy as np
-import optparse
 
 
 def main(args):
@@ -29,27 +28,31 @@ def main(args):
     min_separation = 7
 
     # parse args
-    matrix, outfile = args[:2]
+    matrix_infile, outfile = args[:2]
     if len(args) == 3:
-        num_contacts = args[2]
+        num_contacts = int(args[2])
     elif len(args) == 4:
-        num_contacts, min_separation = args[2:]
-
-    exit()
+        num_contacts = int(args[2])
+        min_separation = int(args[3])
 
     # load coupling matrix
-    mat = np.loadtxt(args[0])
+    mat = np.loadtxt(matrix_infile)
 
     # find top-scoring pairs with sufficient separation
-    top = get_top_pairs(mat, opt.num_contacts, opt.min_separation)
+    top = get_top_pairs(mat, num_contacts, min_separation)
 
-    print("#i\tj\tconfidence")
+    file = open(outfile, "w")
     for i, j, coupling in zip(top[0], top[1], mat[top]):
-        print("{0}\t{1}\t{2}".format(i, j, coupling))
+        file.write(f"{i}\t{j}\t{coupling}\n")
+    file.close()
 
 
 def get_top_pairs(mat, num_contacts, min_separation):
-    """Get the top-scoring contacts"""
+    """Get the top-scoring contacts
+    :param mat: numpy matrix of residue pair scores
+    :param num_contacts: number of top residue pairs that should be extracted
+    :param min_separation: minimum sequence separation of residue pairs
+    """
 
     idx_delta = np.arange(mat.shape[1])[np.newaxis, :] - np.arange(mat.shape[0])[:, np.newaxis]
     mask = idx_delta < min_separation
