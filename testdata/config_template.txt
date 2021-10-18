@@ -15,5 +15,5 @@ jointalnfile=
 jointalnconvfile=
 mfdcaoutfile=
 plmdcaoutfile=
-plmdcaoutmtxfile
+plmdcaoutmtxfile=
 gaussdcaoutfile=

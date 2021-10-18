@@ -92,7 +92,7 @@ class InputConfig():
         """Updates config file with attributes"""
         with open(config, 'w+') as c:
             for key, item in self.__dict__.items():
-                if not key.endswith('path'):
+                if not key.endswith('path') and key != 'dcamtehod':
                     c.write(f'{key}={item}\n')
 
 
