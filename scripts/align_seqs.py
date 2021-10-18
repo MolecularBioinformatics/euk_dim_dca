@@ -58,8 +58,9 @@ def run_muscle(fastafile_path, refseqfile_path, alignmentspath, redo):
 
     start = time.perf_counter()
     proc = subprocess.run(cmdargs, capture_output=True, text=True)
-    print(proc.stdout)
-    print(proc.stderr)
+    # print(proc.stdout)
+    if proc.stderr:
+        print(proc.stderr)
     stop = time.perf_counter()
     if proc.returncode != 0:
         raise ValueError(f'Muscle could not align {fastafile_path}.')

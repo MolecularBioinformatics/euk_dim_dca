@@ -13,7 +13,6 @@ import subprocess
 from io_utils import does_target_exist
 from meanfield_dca import meanfield_dca
 import convert_alignment
-from pathlib import Path
 
 sys.path.append("/cluster/projects/nn9795k/yin/pydca-master/pydca")
 
@@ -61,8 +60,10 @@ def run_gaussdca(aln_path, outfile_path):
     start = time.perf_counter()
     cmd = ["julia", "-t 8", "run_gaussdca.jl", str(aln_path), outfile_path]  # TODO threads?
     proc = subprocess.run(cmd, capture_output=True, text=True)
-    print(proc.stdout)
-    print(proc.stderr)
+    if proc.stdout:
+        print(proc.stdout)
+    if proc.stderr:
+        print(proc.stderr)
     stop = time.perf_counter()
     if proc.returncode != 0:
         raise ValueError(f'GaussDCA run unsuccessful!')
@@ -98,6 +99,10 @@ def run_plmdca(ccmpredpath, aln, outmtx):
     start = time.perf_counter()
     cmd = [run_ccmpred_cmd, aln, outmtx] #TODO threads?
     proc = subprocess.run(cmd)
+    if proc.stdout:
+        print(proc.stdout)
+    if proc.stderr:
+        print(proc.stderr)
     if proc.returncode != 0:
         raise ValueError(f'CCMpred run unsuccessful!')
     stop = time.perf_counter()
@@ -149,7 +154,7 @@ def run_dca(jointaln_path, outpath, redo, method, **kwargs):
         # jointaln_conv = Path(str(jointaln_path).replace(".fasta", "_fmt.fasta"))
         jointaln_conv = alnpath / f"{jointaln_path.stem}_conv.fasta"
         # outmtx_file = Path(str(outfilepath).replace(".dat", ".mat"))
-        outmtx_file = outpath / f"{outfilename.stem}.mat"
+        outmtx_file = outpath / outfilename.replace(".dat", ".mat")
 
         # convert alignment that it fits as input for CCMpred
         convert_alignment.main([jointaln_path, "fasta", jointaln_conv])
