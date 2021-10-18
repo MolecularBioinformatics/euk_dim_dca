@@ -13,6 +13,7 @@ import subprocess
 from io_utils import does_target_exist
 from meanfield_dca import meanfield_dca
 import convert_alignment
+import top_couplings
 
 sys.path.append("/cluster/projects/nn9795k/yin/pydca-master/pydca")
 
@@ -164,7 +165,8 @@ def run_dca(jointaln_path, outpath, redo, method, **kwargs):
         run_plmdca(ccmpredpath, jointaln_conv, outmtx_file)
         print(f"DCA score matrix written to {outmtx_file}")
 
-        # TODO reformat matrix to list as .dat file
+        # convert matrix to residue pair list with a minimum sequence separation of 1 for all residue pairs
+        top_couplings.main([outmtx_file, outfilepath, 1])
 
     else:
         # gaussian DCA approach by gaussDCA
