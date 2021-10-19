@@ -59,7 +59,7 @@ def run_gaussdca(aln_path, outfile_path):
     :param outfile_path: path and filename of output DCA score file (pathlib.PosixPath)
     """
     start = time.perf_counter()
-    cmd = ["julia", "-t 8", "run_gaussdca.jl", str(aln_path), outfile_path]  # TODO threads?
+    cmd = ["julia", "-t",  "6", "run_gaussdca.jl", str(aln_path), outfile_path]
     proc = subprocess.run(cmd, capture_output=True, text=True)
     if proc.stdout:
         print(proc.stdout)
@@ -98,7 +98,7 @@ def run_plmdca(ccmpredpath, aln, outmtx):
     run_ccmpred_cmd = ccmpredpath / "bin/ccmpred"
 
     start = time.perf_counter()
-    cmd = [run_ccmpred_cmd, aln, outmtx] #TODO threads?
+    cmd = [run_ccmpred_cmd, "-t", "6", aln, outmtx]
     proc = subprocess.run(cmd)
     if proc.stdout:
         print(proc.stdout)
