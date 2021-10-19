@@ -128,16 +128,16 @@ def run_dca(jointaln_path, outpath, redo, method, **kwargs):
     outfilename = f'{jointaln_path.stem}_{method}dca_scores.dat'
     outfilepath = outpath / outfilename
 
+    jointaln_conv = None  # two files that are only used for the plmDCA approach
+    outmtx_file = None
+
     if not does_target_exist(jointaln_path, 'file'):
         raise FileNotFoundError(f'JOINT ALN FILE MISSING: Could not find {jointaln_path}')
     elif does_target_exist(outfilepath, 'file') and redo is False:
         print(f'DCA scores files: ({outfilepath}) already exists in {outfilepath.parent}')
-        return outfilepath
+        return outfilepath, jointaln_conv, outmtx_file
 
     print(f"DCA approach: {method}")
-
-    jointaln_conv = None  # two files that are only used for the plmDCA approach
-    outmtx_file = None
 
     if method == "mf":
         # mean-field DCA approach by pydca
@@ -152,18 +152,22 @@ def run_dca(jointaln_path, outpath, redo, method, **kwargs):
         ccmpredpath = kwargs.get("ccmpredpath", None)
         alnpath = kwargs.get("alnpath", None)
 
-        # jointaln_conv = Path(str(jointaln_path).replace(".fasta", "_fmt.fasta"))
         jointaln_conv = alnpath / f"{jointaln_path.stem}_conv.fasta"
-        # outmtx_file = Path(str(outfilepath).replace(".dat", ".mat"))
         outmtx_file = outpath / outfilename.replace(".dat", ".mat")
 
         # convert alignment that it fits as input for CCMpred
-        convert_alignment.main([jointaln_path, "fasta", jointaln_conv])
-        print(f"Converted alignment written to {jointaln_conv}")
+        if redo or not does_target_exist(jointaln_conv, 'file'):
+            convert_alignment.main([jointaln_path, "fasta", jointaln_conv])
+            print(f"Converted alignment written to {jointaln_conv}")
+        else:
+            print(f"Converted alignment already exists in {jointaln_conv}\nContinue with it.")
 
         # run CCMpred on converted alignment. Output is scoring matrix
-        run_plmdca(ccmpredpath, jointaln_conv, outmtx_file)
-        print(f"DCA score matrix written to {outmtx_file}")
+        if redo or not does_target_exist(outmtx_file, 'file'):
+            run_plmdca(ccmpredpath, jointaln_conv, outmtx_file)
+            print(f"DCA score matrix written to {outmtx_file}")
+        else:
+            print(f"DCA score matrix already exists in {outmtx_file}\nContinue with it.")
 
         # convert matrix to residue pair list with a minimum sequence separation of 1 for all residue pairs
         top_couplings.main([outmtx_file, outfilepath, 1])
