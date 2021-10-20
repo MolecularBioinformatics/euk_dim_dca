@@ -57,7 +57,7 @@ def run_muscle(fastafile_path, refseqfile_path, alignmentspath, redo):
                f"{outpath}"]
 
     start = time.perf_counter()
-    proc = subprocess.run(cmdargs, capture_output=True, text=True)
+    proc = subprocess.run(cmdargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
     print(proc.stdout)
     # print(proc.stderr)
     stop = time.perf_counter()

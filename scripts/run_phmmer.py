@@ -16,6 +16,7 @@ from pathlib import Path
 
 from io_utils import does_target_exist, phmmerlog_formatter
 
+
 def run_phmmer(databasepath, seqpath, phmmerpath, redo):
     """
     Spawns subprocess to run phmmer.
@@ -35,7 +36,7 @@ def run_phmmer(databasepath, seqpath, phmmerpath, redo):
                f'{outpath}',
                "--noali",
                "--cpu",
-               "4",
+               "6",
                f'{seqpath}',
                f'{databasepath}']
 
