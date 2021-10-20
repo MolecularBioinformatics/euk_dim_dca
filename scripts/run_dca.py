@@ -39,12 +39,13 @@ def run_pydca_mfdca(jointaln_path):
     return mfdca_FN_APC
 
 
-def writeout_scores(dcalist, outfilepath):
+def writeout_scores(dcalist, outfilepath, min_separation):
     """
     Writes out dca scores in 3 column file.
 
     :param dcalist: list of tuples [((i,j),score),...]
     :param outfilepath: pathlib.PosixPath
+    :param min_separation: minimum seperation of residue pairs along the sequence. Too close residues will be excluded
     """
 
     with open(outfilepath, 'w') as outf:
@@ -52,14 +53,15 @@ def writeout_scores(dcalist, outfilepath):
             outf.write(f'{scorepair[0][0]}\t{scorepair[0][1]}\t{scorepair[1]}\n')
 
 
-def run_gaussdca(aln_path, outfile_path):
+def run_gaussdca(aln_path, outfile_path, min_separation):
     """
     Runs GaussDCA over the Julia script run_gaussdca.jl on input alignment and stores the scores in the outfilepath
     :param aln_path: path and filename of joint MSA (pathlib.PosixPath)
     :param outfile_path: path and filename of output DCA score file (pathlib.PosixPath)
+    :param min_separation: minimum seperation of residue pairs along the sequence. Too close residues will be excluded
     """
     start = time.perf_counter()
-    cmd = ["julia", "-t",  "6", "run_gaussdca.jl", str(aln_path), outfile_path]
+    cmd = ["julia", "-t",  "6", "run_gaussdca.jl", str(aln_path), outfile_path, str(min_separation)]
     proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
     if proc.stdout:
         print(proc.stdout)
@@ -130,6 +132,7 @@ def run_dca(jointaln_path, outpath, redo, method, **kwargs):
 
     jointaln_conv = None  # two files that are only used for the plmDCA approach
     outmtx_file = None
+    min_separation = 5  # minimum sequence separation of residue pairs. Too close residues will be removed
 
     if not does_target_exist(jointaln_path, 'file'):
         raise FileNotFoundError(f'JOINT ALN FILE MISSING: Could not find {jointaln_path}')
@@ -144,7 +147,7 @@ def run_dca(jointaln_path, outpath, redo, method, **kwargs):
         dcascores = run_pydca_mfdca(jointaln_path)
         if not dcascores:
             raise ValueError('DCA run unsuccessful!')
-        writeout_scores(dcascores, outfilepath)
+        writeout_scores(dcascores, outfilepath, min_separation)
 
     elif method == "plm":
         # pseudo-likelihood maximization DCA approach by CCMpred
@@ -170,12 +173,11 @@ def run_dca(jointaln_path, outpath, redo, method, **kwargs):
             print(f"DCA score matrix already exists in {outmtx_file}\nContinue with it.")
 
         # convert matrix to residue pair list with a minimum sequence separation of 5 for all residue pairs
-        sep = 5
-        top_couplings.main([outmtx_file, outfilepath, sep])
+        top_couplings.main([outmtx_file, outfilepath, min_separation])
 
     else:
         # gaussian DCA approach by gaussDCA
-        run_gaussdca(jointaln_path, outfilepath)
+        run_gaussdca(jointaln_path, outfilepath, min_separation)
 
         # edit format of scoring file
         reformat_scoring_file(outfilepath)
