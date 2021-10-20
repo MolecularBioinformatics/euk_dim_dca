@@ -169,8 +169,9 @@ def run_dca(jointaln_path, outpath, redo, method, **kwargs):
         else:
             print(f"DCA score matrix already exists in {outmtx_file}\nContinue with it.")
 
-        # convert matrix to residue pair list with a minimum sequence separation of 1 for all residue pairs
-        top_couplings.main([outmtx_file, outfilepath, 1])
+        # convert matrix to residue pair list with a minimum sequence separation of 5 for all residue pairs
+        sep = 5
+        top_couplings.main([outmtx_file, outfilepath, sep])
 
     else:
         # gaussian DCA approach by gaussDCA
