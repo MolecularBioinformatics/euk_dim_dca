@@ -50,7 +50,8 @@ def writeout_scores(dcalist, outfilepath, min_separation):
 
     with open(outfilepath, 'w') as outf:
         for scorepair in dcalist: #TODO check residue pair seperation here
-            outf.write(f'{scorepair[0][0]}\t{scorepair[0][1]}\t{scorepair[1]}\n')
+            if scorepair[0][1] - scorepair[0][0] >= min_separation:
+                outf.write(f'{scorepair[0][0]}\t{scorepair[0][1]}\t{scorepair[1]}\n')
 
 
 def run_gaussdca(aln_path, outfile_path, min_separation):
