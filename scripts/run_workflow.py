@@ -309,7 +309,7 @@ def main():
     parser.add_argument("taskname", nargs='+', help="task to run: findrefseqs, runphmmer, parsephmmer, processphmmer,"
                                                     " runeasel, processeasel, alignseqs, processalignment, rundca")
     parser.add_argument("-r", "--redo",
-                        help="True/False to re-parse out keyfile")  # TODO set flag as action="store_true", default=False, type=bool
+                        help="set this flag, if you want to redo tasks", action="store_true", default=False, type=bool)
     parser.add_argument("-d", "--dca_method", help="mf/plm/gauss, choose which DCA approach you want to use. "
                                                    "mf: mean-field, "
                                                    "plm: pseudo-likelihood maximization, "
@@ -325,13 +325,6 @@ def main():
     valid_methods = ["mf", "plm", "gauss"]
     if dca_method not in valid_methods:
         raise ValueError(f"{dca_method} not a valid DCA approach. Try again or type -h for help.")
-
-    if redoflag is None:
-        redoflag = False
-    elif redoflag == 'False':
-        redoflag = False
-    elif redoflag == 'True':
-        redoflag = True
 
     if isinstance(args.taskname, str):
         tasklist = [args.taskname]

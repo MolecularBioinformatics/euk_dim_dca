@@ -49,7 +49,7 @@ def writeout_scores(dcalist, outfilepath, min_separation):
     """
 
     with open(outfilepath, 'w') as outf:
-        for scorepair in dcalist: #TODO check residue pair seperation here
+        for scorepair in dcalist:
             if scorepair[0][1] - scorepair[0][0] >= min_separation:
                 outf.write(f'{scorepair[0][0]}\t{scorepair[0][1]}\t{scorepair[1]}\n')
 
