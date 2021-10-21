@@ -213,7 +213,7 @@ def processeasel(icObj, redo):
     return icObj
 
 
-def alignseqs(icObj, realign): #TODO Python multiprocessing here?
+def alignseqs(icObj, realign):
     """Runs muscle to align sequences.
     Takes and returns an InputConfigObj."""
     try:
