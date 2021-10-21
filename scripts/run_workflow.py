@@ -309,7 +309,7 @@ def main():
     parser.add_argument("taskname", nargs='+', help="task to run: findrefseqs, runphmmer, parsephmmer, processphmmer,"
                                                     " runeasel, processeasel, alignseqs, processalignment, rundca")
     parser.add_argument("-r", "--redo",
-                        help="set this flag, if you want to redo tasks", action="store_true", default=False, type=bool)
+                        help="set this flag, if you want to redo tasks", action="store_true", default=False)
     parser.add_argument("-d", "--dca_method", help="mf/plm/gauss, choose which DCA approach you want to use. "
                                                    "mf: mean-field, "
                                                    "plm: pseudo-likelihood maximization, "
