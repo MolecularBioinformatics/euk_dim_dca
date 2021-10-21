@@ -13,7 +13,8 @@ set -o errexit  # Exit the script on any error
 module --quiet purge  # Reset the modules to the system default
 module load Anaconda3/2019.03
 module load HMMER/3.2.1-intel-2018b
-module load MUSCLE/3.8.31-intel-2018b 
+module load MUSCLE/3.8.31-intel-2018b
+module load Julia/1.6.1-linux-x86_64
 
 export PS1=\$
 source ${EBROOTANACONDA3}/etc/profile.d/conda.sh
