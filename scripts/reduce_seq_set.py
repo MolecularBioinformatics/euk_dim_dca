@@ -54,7 +54,7 @@ def del_orgseq_from_dict(somedict, orgset):
     """Removes seqs from dict that are from
     organisms found in the orgset"""
     for key in list(somedict.keys()):
-        if key.split()[0].split('_')[1] in orgset:
+        if key.split()[0].split('_')[1] in orgset and key!='RFSEQ':
             del somedict[key]
     return somedict
 
