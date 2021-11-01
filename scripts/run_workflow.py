@@ -215,7 +215,7 @@ def reduceseqset(icObj, redo):
         icObj.eslfastafile1, icObj.eslfastafile2 = reduce_seq_set(icObj.eslfastafile1, icObj.eslfastafile2, maxlength)
     except ValueError as valerr:
         print(valerr)
-
+    return icObj
 
 def alignseqs(icObj, realign):
     """Runs muscle to align sequences.
