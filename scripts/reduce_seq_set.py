@@ -74,7 +74,7 @@ def reduce_seq_set(fastafile1, fastafile2, cutoffval):
     if not orgset_toremove:
         raise ValueError(f'No sequences above {cutoffval}. Continuing with original fastas...')
     elif len(orgset_toremove) == len(seqsdict1):
-        raise ValueError(f'All sequences are longer than {cutoffval}. Set a more suitable seqlength cutoff. Exiting...') 
+        raise RuntimeError(f'All sequences are longer than {cutoffval}. Set a more suitable seqlength cutoff. Exiting...') 
 
     seqsdict_reduced1 = del_orgseq_from_dict(seqsdict1, orgset_toremove)
     seqsdict_reduced2 = del_orgseq_from_dict(seqsdict2, orgset_toremove)
