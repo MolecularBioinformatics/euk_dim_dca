@@ -24,4 +24,9 @@ conda activate /cluster/projects/nn9795k/conda/biopython
 CONF=/cluster/projects/nn9795k/selina/configs
 # CONF=../configs
 
+#for configfile in $(cat configs_pdbs_13.txt)
+#do
+#       python run_workflow.py $CONF/$configfile $CONF/paths_saga.txt all -r True -d gauss
+#done
+
 python run_workflow.py $CONF/config_3ep3.txt $CONF/paths_saga.txt all -r
