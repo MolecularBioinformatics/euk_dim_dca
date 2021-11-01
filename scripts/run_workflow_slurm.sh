@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=SequenceCheck
+#SBATCH --job-name=DCA
 #SBATCH --account=nn9795k
 #SBATCH --time=02:00:00
 #SBATCH --nodes=1
@@ -24,4 +24,4 @@ conda activate /cluster/projects/nn9795k/conda/biopython
 CONF=/cluster/projects/nn9795k/selina/configs
 # CONF=../configs
 
-python run_workflow.py $CONF/config_3ep3.txt $CONF/paths_saga.txt all -r True
+python run_workflow.py $CONF/config_3ep3.txt $CONF/paths_saga.txt all -r
