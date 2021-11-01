@@ -45,7 +45,8 @@ def get_orgset_to_delete(headerlist1, headerlist2):
     :param headerlist: list of fastaheaders
     :returns orgset: set of orgtags
     """
-    tags = [header.split()[0].split('_')[-1:] for header in headerlist1+headerlist2]
+    tags = [header.split()[0].split('_')[-1:][0] for header in headerlist1+headerlist2]
+    print(tags)
     return set(tags)
 
 
