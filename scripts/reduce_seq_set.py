@@ -82,3 +82,5 @@ def reduce_seq_set(fastafile1, fastafile2, cutoffval):
     print(f'Sequences reduced in {fastafile1}. Original file overwritten.')
     writeout_fasta(fastafile2, seqsdict_reduced2, overwrite=True)
     print(f'Sequences reduced in {fastafile2}. Original file overwritten.')
+
+    return fastafile1, fastafile2
