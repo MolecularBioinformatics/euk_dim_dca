@@ -9,6 +9,7 @@ redo = boolean of whether or not to rerun tasks
 """
 
 from pathlib import Path
+import sys
 
 from find_refseq_files import *
 from io_utils import *
@@ -215,6 +216,10 @@ def reduceseqset(icObj, redo):
         icObj.eslfastafile1, icObj.eslfastafile2 = reduce_seq_set(icObj.eslfastafile1, icObj.eslfastafile2, maxlength)
     except ValueError as valerr:
         print(valerr)
+    except RuntimeError as rerr:
+        print(rerr)
+        sys.exit()
+
     return icObj
 
 def alignseqs(icObj, realign):
