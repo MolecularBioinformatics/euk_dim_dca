@@ -19,6 +19,7 @@ from run_easel_getseqs import *
 from process_easelseqs import *
 from align_seqs import *
 from process_alnseqs import *
+from reduce_seq_set import *
 from run_dca import *
 
 class InputConfig():
@@ -200,6 +201,22 @@ def processeasel(icObj, redo):
     return icObj
 
 
+def reduceseqset(icObj, redo):
+    """Reduces a set of sequences to remove
+    seqs that are too long, hopefully makes
+    alignment step more manageable."""
+
+    # TODO: doesn't use redo yet
+    # TODO: reduction scheme is brute force right now, only throws error if 0 seqs are left
+    
+    maxlength = 1600 #kind of arbitrary!
+
+    try:
+        icObj.eslfastafile1, icObj.eslfastafile2 = reduce_seq_set(icObj.eslfastafile1, icObj.eslfastafile2, maxlength)
+    except ValueError as valerr:
+        print(valerr)
+
+
 def alignseqs(icObj, realign):
     """Runs muscle to align sequences.
     Takes and returns an InputConfigObj."""
@@ -244,7 +261,7 @@ def rundca(icObj, redo):
     return icObj
 
 
-TASKNAMES = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel', 'processeasel', 'alignseqs', 'processalignment', 'rundca'] 
+TASKNAMES = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel', 'processeasel', 'reduceseqset', 'alignseqs', 'processalignment', 'rundca'] 
 
 TASKS = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
          'runphmmer': ('2. run phmmer on refseq\n', runphmmer),
@@ -252,9 +269,10 @@ TASKS = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
          'processphmmer': ('4. process keyfile and match organisms\n', processphmmer),
          'runeasel': ('5. runs easel extract to get seqs from db\n', runeasel),
          'processeasel': ('6. process easel extracted seqs based on organisms\n', processeasel),
-         'alignseqs': ('7. aligns sequences with muscle\n', alignseqs),
-         'processalignment': ('8. matches and joins aligned sequences\n', processalignment),
-         'rundca': ('9. runs DCA on joint aligned sequences\n', rundca)} 
+         'reduceseqset': ('7. removes sequences that are too long from seq set\n', reduceseqset), 
+         'alignseqs': ('8. aligns sequences with muscle\n', alignseqs),
+         'processalignment': ('9. matches and joins aligned sequences\n', processalignment),
+         'rundca': ('10. runs DCA on joint aligned sequences\n', rundca)} 
 
 def run_workflow(configf, pathsf, tasknamelist, redo):
     """Runs eukdimerdca workflow"""
