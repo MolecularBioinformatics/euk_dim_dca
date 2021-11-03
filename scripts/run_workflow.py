@@ -7,6 +7,7 @@ INPUT:
 taskname = list of tasknames to run
 redo = boolean of whether or not to rerun tasks
 """
+from pathlib import Path
 import sys
 from find_refseq_files import *
 from run_phmmer import *
@@ -16,6 +17,7 @@ from run_easel_getseqs import *
 from process_easelseqs import *
 from align_seqs import *
 from process_alnseqs import *
+from reduce_seq_set import *
 from run_dca import *
 import argparse
 
@@ -213,6 +215,26 @@ def processeasel(icObj, redo):
     return icObj
 
 
+def reduceseqset(icObj, redo):
+    """Reduces a set of sequences to remove
+    seqs that are too long, hopefully makes
+    alignment step more manageable."""
+
+    # TODO: doesn't use redo yet
+    # TODO: reduction scheme is brute force right now, only throws error if 0 seqs are left
+    
+    maxlength = 1600 #kind of arbitrary!
+
+    try:
+        icObj.eslfastafile1, icObj.eslfastafile2 = reduce_seq_set(icObj.eslfastafile1, icObj.eslfastafile2, maxlength)
+    except ValueError as valerr:
+        print(valerr)
+    except RuntimeError as rerr:
+        print(rerr)
+        sys.exit()
+
+    return icObj
+
 def alignseqs(icObj, realign):
     """Runs muscle to align sequences.
     Takes and returns an InputConfigObj."""
@@ -268,8 +290,7 @@ def rundca(icObj, redo):
     return icObj
 
 
-TASKNAMES = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel', 'processeasel', 'alignseqs',
-             'processalignment', 'rundca']
+TASKNAMES = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel', 'processeasel', 'reduceseqset', 'alignseqs', 'processalignment', 'rundca'] 
 
 TASKS = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
          'runphmmer': ('2. run phmmer on refseq\n', runphmmer),
@@ -277,10 +298,10 @@ TASKS = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
          'processphmmer': ('4. process keyfile and match organisms\n', processphmmer),
          'runeasel': ('5. runs easel extract to get seqs from db\n', runeasel),
          'processeasel': ('6. process easel extracted seqs based on organisms\n', processeasel),
-         'alignseqs': ('7. aligns sequences with muscle\n', alignseqs),
-         'processalignment': ('8. matches and joins aligned sequences\n', processalignment),
-         'rundca': ('9. runs DCA on joint aligned sequences\n', rundca)}
-
+         'reduceseqset': ('7. removes sequences that are too long from seq set\n', reduceseqset), 
+         'alignseqs': ('8. aligns sequences with muscle\n', alignseqs),
+         'processalignment': ('9. matches and joins aligned sequences\n', processalignment),
+         'rundca': ('10. runs DCA on joint aligned sequences\n', rundca)} 
 
 def run_workflow(configf, pathsf, tasknamelist, redo, dca_method):
     """Runs eukdimerdca workflow"""
@@ -306,8 +327,6 @@ def main():
     parser = argparse.ArgumentParser(usage="python3 %(prog)s [-h] configfile pathfile taskname [taskname, ...]")
     parser.add_argument("configfile", help="path to config.txt file")
     parser.add_argument("pathfile", help="path to paths.txt file")
-    parser.add_argument("taskname", nargs='+', help="task to run: findrefseqs, runphmmer, parsephmmer, processphmmer,"
-                                                    " runeasel, processeasel, alignseqs, processalignment, rundca")
     parser.add_argument("-r", "--redo",
                         help="set this flag, if you want to redo tasks", action="store_true", default=False)
     parser.add_argument("-d", "--dca_method", help="mf/plm/gauss, choose which DCA approach you want to use. "
@@ -315,6 +334,7 @@ def main():
                                                    "plm: pseudo-likelihood maximization, "
                                                    "gauss: gaussian. "
                                                    "default is mf", default="mf", type=str)
+    parser.add_argument("taskname", nargs = '+', help="task to run: findrefseqs, runphmmer, parsephmmer, processphmmer, runeasel, processeasel, reduceseqset, alignseqs, processalignment, rundca")
     args = parser.parse_args()
 
     configfile = args.configfile
