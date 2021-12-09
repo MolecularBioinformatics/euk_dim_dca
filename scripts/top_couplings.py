@@ -33,13 +33,33 @@ def main(args):
     # load coupling matrix
     mat = np.loadtxt(matrix_infile)
 
-    # find top-scoring pairs with sufficient separation
+    # find top-scoring pairs with sufficient separation and remove double pairs
     top = get_top_pairs(mat, min_separation)
+    top_unique = remove_double_pairs(top)
 
     file = open(outfile, "w")
-    for i, j, coupling in zip(top[0], top[1], mat[top]):
+    for i, j, coupling in zip(top_unique[0], top_unique[1], mat[top_unique]):
         file.write(f"{i}\t{j}\t{coupling}\n")
     file.close()
+
+
+def remove_double_pairs(pairs):
+    """
+    Gets a tuple with two lists and removes double pairs (eg 29-49 and 49-29 are double) in the tuple
+    Uses a set of frozen sets with the residue pair. Frozenset enables creating a set of sets
+    :param pairs: Tuple of two numpy.ndarray, contains residue pairs, 
+    eg ([ 49, 73, 82, ..., 176,175, 0], [ 29, 65, 48, ..., 179, 179, 0])
+    :return: tuple of two lists with unique residue pairs
+    """
+    check_set = set()
+    resis1 = []
+    resis2 = []
+    for i, j in zip(pairs[0], pairs[1]):
+        if frozenset([i, j]) not in check_set and i != j:
+            resis1.append(i)
+            resis2.append(j)
+            check_set.add(frozenset([i, j]))
+    return tuple([resis1, resis2])
 
 
 def get_top_pairs(mat, min_separation):
