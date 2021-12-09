@@ -39,7 +39,8 @@ def main(args):
 
     file = open(outfile, "w")
     for i, j, coupling in zip(top_unique[0], top_unique[1], mat[top_unique]):
-        file.write(f"{i}\t{j}\t{coupling}\n")
+        resi1, resi2 = sorted([i, j])  # smallest residue index first
+        file.write(f"{resi1}\t{resi2}\t{coupling}\n")
     file.close()
 
 
