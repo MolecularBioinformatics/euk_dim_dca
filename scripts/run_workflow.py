@@ -160,9 +160,10 @@ def processphmmer(icObj, overwrite):
     try:
         icObj.matchedkeyfile1, icObj.matchedkeyfile2 = process_phmmerhits(icObj.keyfilepath, icObj.keyfile1, icObj.keyfile2, minhits, maxhits, overwrite)
     except ValueError as valerr: 
-        raise ValueError('Unable to process keyfiles.') from valerr
-    finally:
-        return icObj
+        print(valerr)
+        sys.exit()
+    
+    return icObj
 
 
 def runeasel(icObj, rerun):
