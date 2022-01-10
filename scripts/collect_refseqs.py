@@ -6,6 +6,10 @@ Takes in a file with list of pdbids and a path to the refseq files.
 Puts all the refseq files for each pdbid in a fasta file.
 
 Intended to be used for clustering
+
+Outputs two types of fasta files: 
+1) master fasta file with all sequences from each chain
+2) fasta file with joined sequences for each pdb entry
 """
 
 from pathlib import Path
@@ -48,6 +52,14 @@ def scan_dir_for_refseq(pathtorefseqs, pdbidlist):
         refseqlist = get_globbed_list(pathtorefseqs, targregex)
         refseqpathlist += refseqlist
     return refseqpathlist
+
+
+def concatenate_seqs(refseqlist):
+    """Takes in list of reference fasta files, finds
+    files with matching pdb ids and returns a list of
+    tuples matched files"""
+    pass
+
 
 def collect_refseqs(pathto_pdblist, pathto_refseqs, outfilename, outpath, printout=False):
     """Reads in pdbids, searches for matching refseqs and puts
