@@ -156,7 +156,6 @@ def matched_keyfiles_exist(keyfilepaths, phmmerpath):
     Returns True if they exist, else returns False.
     """
     matchedkeyfilespaths = [phmmerpath / io.matched_keyfile_formatter(keyfile) for keyfile in keyfilepaths]
-    print(f'Matched keyfiles: {matchedkeyfilespaths}')
     if matchedkeyfilespaths[0].exists() and matchedkeyfilespaths[1].exists():
         return True
     else:
@@ -212,6 +211,7 @@ def process_phmmerhits(pathtokeyfiles, keyfile1path, keyfile2path, minhits, maxh
         outfile = io.matched_keyfile_formatter(keyfile)
         outpath = pathtokeyfiles / outfile
         keylist.append(outpath)
+        print(outpath)
         io.writeout_list(list(hits[keyfile]), outpath) 
 
     return keylist[0], keylist[1]
