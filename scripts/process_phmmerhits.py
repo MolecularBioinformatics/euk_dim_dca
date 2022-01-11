@@ -183,7 +183,10 @@ def process_phmmerhits(pathtokeyfiles, keyfile1path, keyfile2path, minhits, maxh
 
     if redo==False and matched_keyfiles_exist(keyfilepaths, pathtokeyfiles)==True:
         print(f'Matched keyfiles already exist!')
-        return pathtokeyfiles/io.matched_keyfile_formatter(keyfilepaths[0]), pathtokeyfiles/io.matched_keyfile_formatter(keyfilepaths[1])
+        matchedfile1 = pathtokeyfiles/io.matched_keyfile_formatter(keyfilepaths[0])
+        matchedfile2 = pathtokeyfiles/io.matched_keyfile_formatter(keyfilepaths[1])
+        print(f'Matched keyfiles: {matchedfile1}, {matchedfile2}')
+        return matchedfile1, matchedfile2
 
     hits = {}
     for keyfile in keyfilepaths:
@@ -211,7 +214,6 @@ def process_phmmerhits(pathtokeyfiles, keyfile1path, keyfile2path, minhits, maxh
         outfile = io.matched_keyfile_formatter(keyfile)
         outpath = pathtokeyfiles / outfile
         keylist.append(outpath)
-        print(outpath)
         io.writeout_list(list(hits[keyfile]), outpath) 
 
     return keylist[0], keylist[1]
