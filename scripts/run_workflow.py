@@ -13,6 +13,7 @@ import sys
 
 from find_refseq_files import *
 from io_utils import *
+from edit_refseqs import *
 from run_phmmer import *
 from parse_accid_phmmerlog import *
 from process_phmmerhits import *
@@ -109,6 +110,16 @@ def findrefseqs(icObject, redo):
         print(valerr)
     finally:
         return icObject
+
+def editrefseqs(icObj, redo):
+    """Processes reference sequences by
+    removing nonstandard amino acids (Xs).
+    Takes and returns an InputConfigObj."""
+    try:
+        icObj.refseq1, icObj.refseq2 = edit_refseqs(icObj.refseq1, icObj.refseq2, redo)
+    except FileNotFoundError as fnotfound:
+        print(fnotfound)
+    return icObj
 
 
 def runphmmer(icObj, rerun): 
@@ -267,18 +278,19 @@ def rundca(icObj, redo):
     return icObj
 
 
-TASKNAMES = ['all', 'findrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel', 'processeasel', 'reduceseqset', 'alignseqs', 'processalignment', 'rundca'] 
+TASKNAMES = ['all', 'findrefseqs', 'editrefseqs', 'runphmmer', 'parsephmmer', 'processphmmer', 'runeasel', 'processeasel', 'reduceseqset', 'alignseqs', 'processalignment', 'rundca'] 
 
 TASKS = {'findrefseqs': ('1. find refseq fasta files\n', findrefseqs),
-         'runphmmer': ('2. run phmmer on refseq\n', runphmmer),
-         'parsephmmer': ('3. parse phmmer into keyfile\n', parsephmmer),
-         'processphmmer': ('4. process keyfile and match organisms\n', processphmmer),
-         'runeasel': ('5. runs easel extract to get seqs from db\n', runeasel),
-         'processeasel': ('6. process easel extracted seqs based on organisms\n', processeasel),
-         'reduceseqset': ('7. removes sequences that are too long from seq set\n', reduceseqset), 
-         'alignseqs': ('8. aligns sequences with muscle\n', alignseqs),
-         'processalignment': ('9. matches and joins aligned sequences\n', processalignment),
-         'rundca': ('10. runs DCA on joint aligned sequences\n', rundca)} 
+         'editrefseqs': ('2. process refseq\n', editrefseqs),
+         'runphmmer': ('3. run phmmer on refseq\n', runphmmer),
+         'parsephmmer': ('4. parse phmmer into keyfile\n', parsephmmer),
+         'processphmmer': ('5. process keyfile and match organisms\n', processphmmer),
+         'runeasel': ('6. runs easel extract to get seqs from db\n', runeasel),
+         'processeasel': ('7. process easel extracted seqs based on organisms\n', processeasel),
+         'reduceseqset': ('8. removes sequences that are too long from seq set\n', reduceseqset), 
+         'alignseqs': ('9. aligns sequences with muscle\n', alignseqs),
+         'processalignment': ('10. matches and joins aligned sequences\n', processalignment),
+         'rundca': ('11. runs DCA on joint aligned sequences\n', rundca)} 
 
 def run_workflow(configf, pathsf, tasknamelist, redo):
     """Runs eukdimerdca workflow"""
@@ -305,7 +317,7 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser(usage="python3 %(prog)s [-h] configfile pathfile taskname [taskname, ...] --redo")
     parser.add_argument("configfile", help="path to config.txt file")
     parser.add_argument("pathfile", help="path to paths.txt file")
-    parser.add_argument("taskname", nargs = '+', help="task to run: findrefseqs, runphmmer, parsephmmer, processphmmer, runeasel, processeasel, reduceseqset, alignseqs, processalignment, rundca")
+    parser.add_argument("taskname", nargs = '+', help="task to run: findrefseqs, editrefseqs, runphmmer, parsephmmer, processphmmer, runeasel, processeasel, reduceseqset, alignseqs, processalignment, rundca")
     parser.add_argument("-r", "--redo", help="True/False to re-parse out keyfile")
     args = parser.parse_args()
 
